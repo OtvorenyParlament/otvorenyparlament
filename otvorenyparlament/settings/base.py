@@ -118,10 +118,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
-# # GraphQL
-# GRAPHENE = {
-#     'SCHEMA': 'otvorenyparlament.graphql.SCHEMA',
-#     'MIDDLEWARE': [
-#         'graphene_django.debug.DjangoDebugMiddleware',
-#     ]
-# }
+# GraphQL
+GRAPHENE = {
+    'SCHEMA': 'otvorenyparlament.graphql.SCHEMA',
+    'MIDDLEWARE': [
+        'graphene_django.debug.DjangoDebugMiddleware',
+    ]
+}

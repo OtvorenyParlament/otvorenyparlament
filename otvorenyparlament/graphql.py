@@ -4,8 +4,10 @@ GraphQL Schema
 
 import graphene
 
+from parliament.graphql import ParliamentQueries
 
-class Queries(graphene.ObjectType):
+
+class Queries(ParliamentQueries, graphene.ObjectType):
 
     pass
 
