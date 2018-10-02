@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'c7%mopg!cak+tv39jnm6ex394gr$d6gx!=w=awa*1-78j&1ydn'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django_filters',
     'django_extensions',
-    'graphene_django'
+    'graphene_django',
+    # otvorenyparlament apps
+    'parliament'
 ]
 
 MIDDLEWARE = [

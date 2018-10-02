@@ -5,6 +5,7 @@ Dev server settings
 from otvorenyparlament.settings.base import *
 
 ALLOWED_HOSTS = ['*']
+DEBUG = True
 
 DATABASES = {
     'default': {
