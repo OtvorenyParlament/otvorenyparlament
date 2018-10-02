@@ -4,10 +4,11 @@ GraphQL Schema
 
 import graphene
 
+from geo.graphql import GeoQueries
 from parliament.graphql import ParliamentQueries
 
 
-class Queries(ParliamentQueries, graphene.ObjectType):
+class Queries(GeoQueries, ParliamentQueries, graphene.ObjectType):
 
     pass
 

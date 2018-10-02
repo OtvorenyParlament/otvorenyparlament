@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'graphene_django',
     # otvorenyparlament apps
+    'geo',
     'parliament'
 ]
 

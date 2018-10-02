@@ -6,7 +6,7 @@ import graphene
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
-from parliament.models import Period
+from parliament.models import Club, Period
 
 
 class ClubType(DjangoObjectType):
