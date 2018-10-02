@@ -18,3 +18,13 @@ class Period(models.Model):
     def __str__(self):
         return '{}: {} - {}'.format(
             self.period_num, self.year_start, self.year_end or '')
+
+
+class Club(models.Model):
+    period = models.ForeignKey(Period, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    email = models.EmailField(null=True, blank=True)
+    external_id = models.IntegerField(null=True, blank=True)
+    
+    def __str__(self):
+        return self.name

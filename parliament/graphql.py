@@ -9,6 +9,19 @@ from graphene_django.filter import DjangoFilterConnectionField
 from parliament.models import Period
 
 
+class ClubType(DjangoObjectType):
+    
+    class Meta:
+        model = Club
+        description = 'Club'
+        interfaces = (graphene.relay.Node,)
+        filter_fields = {
+            'id': ('exact',),
+            'period__period_num': ('exact',)
+        }
+        only_fields = ['name', 'external_id', 'period']
+
+
 class PeriodType(DjangoObjectType):
     
     class Meta:
@@ -23,6 +36,9 @@ class PeriodType(DjangoObjectType):
 
 
 class ParliamentQueries(graphene.ObjectType):
+
+    club = graphene.relay.Node.Field(ClubType)
+    all_clubs = DjangoFilterConnectionField(ClubType)
 
     period = graphene.relay.Node.Field(PeriodType)
     all_periods = DjangoFilterConnectionField(PeriodType)
