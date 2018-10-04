@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'graphene_django',
     # otvorenyparlament apps
     'geo',
-    'parliament'
+    'parliament',
+    'person'
 ]
 
 MIDDLEWARE = [

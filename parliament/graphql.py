@@ -1,5 +1,5 @@
 """
-Parliament GraphQL Types
+Parliament GraphQL Types and Queries
 """
 
 import graphene
@@ -10,7 +10,7 @@ from parliament.models import Club, Period
 
 
 class ClubType(DjangoObjectType):
-    
+
     class Meta:
         model = Club
         description = 'Club'
@@ -23,7 +23,7 @@ class ClubType(DjangoObjectType):
 
 
 class PeriodType(DjangoObjectType):
-    
+
     class Meta:
         model = Period
         description = 'Period'
