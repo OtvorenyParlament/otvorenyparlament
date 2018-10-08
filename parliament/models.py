@@ -99,6 +99,32 @@ class MemberChange(models.Model):
     change_reason = models.TextField()
 
 
+class ClubMemberManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().select_related('club', 'member', 'member__person')
+
+
+class ClubMember(models.Model):
+    club = models.ForeignKey('Club', on_delete=models.CASCADE)
+    member = models.ForeignKey('Member', on_delete=models.CASCADE, related_name='club_memberships')
+    membership = models.CharField(max_length=24, db_index=True, null=True, blank=True)
+    start = models.DateField(null=True, blank=True)
+    end = models.DateField(null=True, blank=True)
+    objects = ClubMemberManager()
+
+    def __str__(self):
+        return '{} - {}'.format(self.club, self.member)
+
+    def end_membership(self):
+        """
+        Mark current membership as ended
+        """
+        self.end = timezone.now()
+        self.save()
+        return True
+
+
 class Press(models.Model):
     """
     Parliament press

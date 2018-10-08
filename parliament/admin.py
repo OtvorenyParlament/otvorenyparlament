@@ -4,13 +4,29 @@ Parliament Admin Views
 
 from django.contrib import admin
 
-from parliament.models import Club, Member, MemberChange, Party, Period, Press, Session
+from parliament.models import (
+    Club, ClubMember, Member, MemberChange, Party, Period, Press, Session)
 
 
 @admin.register(Club)
 class ClubAdmin(admin.ModelAdmin):
 
     pass
+
+
+@admin.register(ClubMember)
+class ClubMemberAdmin(admin.ModelAdmin):
+
+    list_filter = ('club',)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "club":
+            kwargs["queryset"] = Club.objects.all().select_related()
+        if db_field.name == 'member':
+            kwargs['queryset'] = Member.objects.all(
+            ).select_related().prefetch_related().order_by(
+                'person__forename', 'person__surname')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(Member)

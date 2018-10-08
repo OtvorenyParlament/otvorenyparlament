@@ -9,6 +9,7 @@ from graphene_django.filter import DjangoFilterConnectionField
 from graphql_utils import CountableConnectionBase, OrderedDjangoFilterConnectionField
 from parliament.models import (
     Club,
+    ClubMember,
     Member,
     Period,
     Press,
@@ -30,6 +31,19 @@ class ClubType(DjangoObjectType):
             'period__period_num': ('exact',)
         }
         only_fields = ['name', 'external_id', 'period']
+
+
+class ClubMemberType(DjangoObjectType):
+    
+    class Meta:
+        model = ClubMember
+        description = 'Club Member'
+        interfaces = (graphene.relay.Node,)
+        filter_fields = {
+            'id': ('exact',),
+            'club': ('exact',)
+        }
+        only_fields = ['club', 'member', 'membership', 'start', 'end']
 
 
 class PeriodType(DjangoObjectType):
@@ -96,6 +110,9 @@ class ParliamentQueries(graphene.ObjectType):
 
     club = graphene.relay.Node.Field(ClubType)
     all_clubs = DjangoFilterConnectionField(ClubType)
+
+    club_member = graphene.relay.Node.Field(ClubMemberType)
+    all_club_members = DjangoFilterConnectionField(ClubMemberType)
 
     period = graphene.relay.Node.Field(PeriodType)
     all_periods = DjangoFilterConnectionField(PeriodType)
