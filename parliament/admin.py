@@ -4,7 +4,7 @@ Parliament Admin Views
 
 from django.contrib import admin
 
-from parliament.models import Club, Member, MemberChange, Party, Period, Press
+from parliament.models import Club, Member, MemberChange, Party, Period, Press, Session
 
 
 @admin.register(Club)
@@ -45,3 +45,9 @@ class PressAdmin(admin.ModelAdmin):
 
     list_select_related = ('period',)
     list_display = ('period', 'press_type', 'press_num', 'title')
+
+
+@admin.register(Session)
+class SessionAdmin(admin.ModelAdmin):
+
+    list_display = ('period', 'name', 'session_num', 'session_id')

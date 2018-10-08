@@ -12,6 +12,10 @@ from parliament.models import (
     Member,
     Period,
     Press,
+    # PressAttachment,
+    Session,
+    SessionProgram,
+    # SessionAttachment,
 )
 
 
@@ -66,6 +70,28 @@ class MemberType(DjangoObjectType):
         connection_class = CountableConnectionBase
 
 
+class SessionType(DjangoObjectType):
+    class Meta:
+        model = Session
+        interfaces = (graphene.relay.Node,)
+        filter_fields = {
+            'id': ('exact',),
+            'session_num': ('exact',),
+            'period__period_num': ('exact',)
+        }
+        connection_class = CountableConnectionBase
+
+
+class SessionProgramPointType(DjangoObjectType):
+    class Meta:
+        model = SessionProgram
+        interfaces = (graphene.relay.Node,)
+        connection_class = CountableConnectionBase
+        filter_fields = {
+            'id': ('exact',)
+        }
+
+
 class ParliamentQueries(graphene.ObjectType):
 
     club = graphene.relay.Node.Field(ClubType)
@@ -76,6 +102,14 @@ class ParliamentQueries(graphene.ObjectType):
 
     press = graphene.relay.Node.Field(PressType)
     all_presses = DjangoFilterConnectionField(PressType)
+
+    session = graphene.relay.Node.Field(SessionType)
+    all_sessions = OrderedDjangoFilterConnectionField(
+        SessionType, orderBy=graphene.List(of_type=graphene.String))
+
+    session_program_point = graphene.relay.Node.Field(SessionProgramPointType)
+    all_session_program_points = OrderedDjangoFilterConnectionField(
+        SessionProgramPointType, orderBy=graphene.List(of_type=graphene.String))
 
     member = graphene.relay.Node.Field(MemberType)
     all_members = OrderedDjangoFilterConnectionField(

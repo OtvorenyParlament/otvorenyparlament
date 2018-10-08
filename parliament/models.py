@@ -141,3 +141,48 @@ class PressAttachment(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Session(models.Model):
+    """
+    Parliament Sessions
+    """
+    name = models.CharField(max_length=255)
+    session_id = models.PositiveIntegerField()
+    period = models.ForeignKey('Period', on_delete=models.CASCADE, related_name='sessions')
+    session_num = models.PositiveIntegerField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('-period', '-session_num')
+
+    def __str__(self):
+        return self.name
+
+
+class SessionProgram(models.Model):
+    """
+    Parliament Session Program
+    """
+    session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name='points')
+    press = models.ForeignKey(Press, on_delete=models.CASCADE, null=True, blank=True)
+    point = models.PositiveIntegerField(null=True, blank=True)
+    state = models.CharField(max_length=128)
+    text = models.TextField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('session', 'point')
+
+    def __str__(self):
+        return '{}. {}'.format(self.point, self.text)
+
+
+class SessionAttachment(models.Model):
+    """
+    Parliament Session Attachments
+    """
+    session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name='attachments')
+    title = models.TextField(max_length=512, default='missing title')
+    url = models.URLField()
+
+    def __str__(self):
+        return '{} {}'.format(self.session, self.title)
