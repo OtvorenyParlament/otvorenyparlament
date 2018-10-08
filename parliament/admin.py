@@ -4,8 +4,8 @@ Parliament Admin Views
 
 from django.contrib import admin
 
-from parliament.models import (
-    Club, ClubMember, Member, MemberChange, Party, Period, Press, Session)
+from parliament.models import (Club, ClubMember, Member, MemberChange, Party,
+                               Period, Press, Session, Voting, VotingVote)
 
 
 @admin.register(Club)
@@ -67,3 +67,13 @@ class PressAdmin(admin.ModelAdmin):
 class SessionAdmin(admin.ModelAdmin):
 
     list_display = ('period', 'name', 'session_num', 'session_id')
+
+
+class VotingVoteInline(admin.TabularInline):
+    
+    model = VotingVote
+
+
+@admin.register(Voting)
+class VotingAdmin(admin.ModelAdmin):
+    inlines = [VotingVoteInline,]

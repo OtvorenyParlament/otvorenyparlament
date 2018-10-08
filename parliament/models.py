@@ -212,3 +212,95 @@ class SessionAttachment(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.session, self.title)
+
+
+class VotingManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().select_related('session', 'press')
+
+
+class Voting(models.Model):
+    PASSED = 'passed'
+    DID_NOT_PASS = 'did_not_pass'
+    PARLIAMENT_UNABLE = 'parliament_unable'
+    RESULTS = (
+        (PASSED, 'Návrh prešiel'),
+        (DID_NOT_PASS, 'Návrh neprešiel'),
+        (PARLIAMENT_UNABLE, 'Parlament nebol uznášaniaschopný')
+    )
+    session = models.ForeignKey(
+        Session, on_delete=models.CASCADE, related_name='votings')
+    press = models.ForeignKey(
+        Press,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='votings')
+    voting_num = models.PositiveIntegerField()
+    topic = models.TextField()
+    timestamp = models.DateTimeField()
+    result = models.CharField(max_length=24, choices=RESULTS)
+    objects = VotingManager()
+
+    class Meta:
+        ordering = ('-voting_num',)
+
+    # @property
+    def chart_series(self):
+        display = {
+            x[0]: x[1]
+            for x in VotingVote._meta.get_field('vote').flatchoices
+        }
+        sums = self.votes.values('vote').annotate(total=models.Count('vote'))
+        series = []
+        labels = []
+        for dct in sums:
+            labels.append(display[dct['vote']])
+            series.append(dct['total'])
+        return {'series': series, 'labels': labels}
+
+
+class VotingVoteManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().select_related(
+            'person', 'voting', 'voting__session', 'voting__press')
+
+
+class VotingVote(models.Model):
+    FOR = 'Z'
+    AGAINST = 'P'
+    ABSTAIN = '?'
+    DNV = 'N'
+    ABSENT = '0'
+
+    OPTIONS = (
+        # (FOR, 'Za'),
+        # (AGAINST, 'Proti'),
+        # (ABSTAIN, 'Zdržal(a) sa'),
+        # (DNV, 'Nehlasoval(a)'),
+        # (ABSENT, 'Neprítomná/ý')
+        (FOR, _('for')),
+        (AGAINST, _('against')),
+        (ABSTAIN, _('abstained')),
+        (DNV, _('did not vote')),
+        (ABSENT, _('absent'))
+    )
+
+    voting = models.ForeignKey(
+        Voting, on_delete=models.CASCADE, related_name='votes')
+    person = models.ForeignKey(
+        'person.Person',
+        on_delete=models.CASCADE,
+        related_name='votes',
+        null=True,
+        blank=True)
+    vote = models.CharField(max_length=4, choices=OPTIONS)
+    objects = VotingVoteManager()
+
+    class Meta:
+        ordering = ('-voting__session__session_num', '-voting__voting_num',)
+
+    def __str__(self):
+        return '{} {} {}'.format(self.voting, self.person, self.vote)

@@ -7,6 +7,7 @@ from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
 from graphql_utils import CountableConnectionBase, OrderedDjangoFilterConnectionField
+from parliament.filters import VotingVoteFilterSet
 from parliament.models import (
     Club,
     ClubMember,
@@ -17,6 +18,8 @@ from parliament.models import (
     Session,
     SessionProgram,
     # SessionAttachment,
+    Voting,
+    VotingVote,
 )
 
 
@@ -34,7 +37,7 @@ class ClubType(DjangoObjectType):
 
 
 class ClubMemberType(DjangoObjectType):
-    
+
     class Meta:
         model = ClubMember
         description = 'Club Member'
@@ -106,6 +109,77 @@ class SessionProgramPointType(DjangoObjectType):
         }
 
 
+class VotingChartSeriesType(graphene.ObjectType):
+    labels = graphene.List(graphene.String)
+    series = graphene.List(graphene.Int)
+
+
+class VotingType(DjangoObjectType):
+
+    chart_series = graphene.Field(VotingChartSeriesType)
+
+    class Meta:
+        model = Voting
+        connection_class = CountableConnectionBase
+        interfaces = (graphene.relay.Node, )
+        filter_fields = {
+            'id': ('exact',),
+            'session__session_num': ('exact',),
+            'session__period__period_num': ('exact',)
+        }
+
+    @classmethod
+    def get_node(cls, info, id):
+        node = Voting.objects.get(id=id)
+        return node
+
+    @classmethod
+    def get_connection(cls):
+        class CountableConnection(graphene.relay.Connection):
+            total_count = graphene.Int()
+
+            class Meta:
+                name = '{}Connection'.format(cls._meta.name)
+                node = cls
+
+            @staticmethod  # Redundant since Graphene kinda does this automatically for all resolve_ methods.
+            def resolve_total_count(root, args, context, info):
+                return root.length
+
+        return CountableConnection
+
+    def resolve_chart_series(self, info):
+        return VotingChartSeriesType(**self.chart_series())
+
+
+class VotingVoteType(DjangoObjectType):
+
+    class Meta:
+        model = VotingVote
+        interfaces = (graphene.relay.Node, )
+        connection_class = CountableConnectionBase
+
+    @classmethod
+    def get_node(cls, info, id):
+        node = VotingVote.objects.get(id=id)
+        return node
+
+    @classmethod
+    def get_connection(cls):
+        class CountableConnection(graphene.relay.Connection):
+            total_count = graphene.Int()
+
+            class Meta:
+                name = '{}Connection'.format(cls._meta.name)
+                node = cls
+
+            @staticmethod  # Redundant since Graphene kinda does this automatically for all resolve_ methods.
+            def resolve_total_count(root, args, context, info):
+                return root.length
+
+        return CountableConnection
+
+
 class ParliamentQueries(graphene.ObjectType):
 
     club = graphene.relay.Node.Field(ClubType)
@@ -127,6 +201,16 @@ class ParliamentQueries(graphene.ObjectType):
     session_program_point = graphene.relay.Node.Field(SessionProgramPointType)
     all_session_program_points = OrderedDjangoFilterConnectionField(
         SessionProgramPointType, orderBy=graphene.List(of_type=graphene.String))
+
+    voting = graphene.relay.Node.Field(VotingType)
+    all_votings = OrderedDjangoFilterConnectionField(
+        VotingType, orderBy=graphene.List(of_type=graphene.String))
+
+    voting_vote = graphene.relay.Node.Field(VotingVoteType)
+    all_voting_votes = OrderedDjangoFilterConnectionField(
+        VotingVoteType,
+        orderBy=graphene.List(of_type=graphene.String),
+        filterset_class=VotingVoteFilterSet)
 
     member = graphene.relay.Node.Field(MemberType)
     all_members = OrderedDjangoFilterConnectionField(
