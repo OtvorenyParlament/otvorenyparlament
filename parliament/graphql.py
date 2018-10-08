@@ -9,8 +9,9 @@ from graphene_django.filter import DjangoFilterConnectionField
 from graphql_utils import CountableConnectionBase, OrderedDjangoFilterConnectionField
 from parliament.models import (
     Club,
+    Member,
     Period,
-    Member
+    Press,
 )
 
 
@@ -40,6 +41,18 @@ class PeriodType(DjangoObjectType):
         only_fields = ['id', 'period_num', 'year_start', 'year_end', 'snap_end']
 
 
+class PressType(DjangoObjectType):
+    class Meta:
+        model = Press
+        interfaces = (graphene.relay.Node,)
+        filter_fields = {
+            'id': ('exact',),
+            'press_num': ('exact',),
+            'press_type': ('exact',),
+            'period__period_num': ('exact',)
+        }
+
+
 class MemberType(DjangoObjectType):
 
     class Meta:
@@ -53,7 +66,6 @@ class MemberType(DjangoObjectType):
         connection_class = CountableConnectionBase
 
 
-
 class ParliamentQueries(graphene.ObjectType):
 
     club = graphene.relay.Node.Field(ClubType)
@@ -61,6 +73,9 @@ class ParliamentQueries(graphene.ObjectType):
 
     period = graphene.relay.Node.Field(PeriodType)
     all_periods = DjangoFilterConnectionField(PeriodType)
+
+    press = graphene.relay.Node.Field(PressType)
+    all_presses = DjangoFilterConnectionField(PressType)
 
     member = graphene.relay.Node.Field(MemberType)
     all_members = OrderedDjangoFilterConnectionField(
