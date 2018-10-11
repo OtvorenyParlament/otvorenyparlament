@@ -54,7 +54,7 @@ class Member(models.Model):
         'person.Person', on_delete=models.CASCADE, related_name='memberships')
     period = models.ForeignKey('Period', on_delete=models.CASCADE)
     stood_for_party = models.ForeignKey('Party', on_delete=models.CASCADE)
-    start = models.DateField(default=timezone.now)
+    start = models.DateField(null=True, blank=True)
     end = models.DateField(null=True, blank=True)
 
     def __str__(self):
