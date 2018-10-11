@@ -35,6 +35,8 @@ class Party(models.Model):
     """
     Parliament Party
     """
+    # TODO(Jozef): Parties are duplicated in some periods with different
+    # names, also some changed name in time. Improve this model
     name = models.CharField(max_length=255, verbose_name=_('Party'))
 
     def __str__(self):
