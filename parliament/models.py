@@ -25,7 +25,7 @@ class Club(models.Model):
     period = models.ForeignKey(Period, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     email = models.EmailField(null=True, blank=True)
-    external_id = models.IntegerField(null=True, blank=True)
+    external_id = models.IntegerField(unique=True)
 
     def __str__(self):
         return self.name
@@ -143,7 +143,7 @@ class Press(models.Model):
         (TYPE_DRAFTLAW, _('Draft law')),
         (TYPE_REPORT, _('Report')),
     )
-    external_id = models.IntegerField(null=True, blank=True)
+    external_id = models.IntegerField(unique=True)
     press_type = models.CharField(max_length=24, choices=TYPES, db_index=True)
     title = models.TextField()
     press_num = models.CharField(max_length=24, db_index=True)
@@ -174,7 +174,7 @@ class Session(models.Model):
     Parliament Sessions
     """
     name = models.CharField(max_length=255)
-    session_id = models.PositiveIntegerField()
+    external_id = models.PositiveIntegerField(unique=True)
     period = models.ForeignKey('Period', on_delete=models.CASCADE, related_name='sessions')
     session_num = models.PositiveIntegerField(null=True, blank=True)
 
@@ -229,6 +229,7 @@ class Voting(models.Model):
         (DID_NOT_PASS, 'Návrh neprešiel'),
         (PARLIAMENT_UNABLE, 'Parlament nebol uznášaniaschopný')
     )
+    external_id = models.PositiveIntegerField(unique=True)
     session = models.ForeignKey(
         Session, on_delete=models.CASCADE, related_name='votings')
     press = models.ForeignKey(

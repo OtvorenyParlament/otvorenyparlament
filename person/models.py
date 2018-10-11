@@ -52,7 +52,7 @@ class Person(models.Model):
         max_length=24, db_index=True, choices=NATIONALITIES, default=UNKNOWN)
     photo = models.ImageField(upload_to='member_images/', blank=True, null=True)
     external_photo_url = models.URLField(blank=True, null=True)
-    external_id = models.PositiveIntegerField(db_index=True)
+    external_id = models.PositiveIntegerField(unique=True)
     external_url = models.URLField()
 
     def __str__(self):

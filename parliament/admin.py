@@ -66,11 +66,11 @@ class PressAdmin(admin.ModelAdmin):
 @admin.register(Session)
 class SessionAdmin(admin.ModelAdmin):
 
-    list_display = ('period', 'name', 'session_num', 'session_id')
+    list_display = ('period', 'name', 'session_num', 'external_id')
 
 
 class VotingVoteInline(admin.TabularInline):
-    
+
     model = VotingVote
 
 
