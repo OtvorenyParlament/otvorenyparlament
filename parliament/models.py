@@ -56,6 +56,7 @@ class Member(models.Model):
     stood_for_party = models.ForeignKey('Party', on_delete=models.CASCADE)
     start = models.DateField(null=True, blank=True)
     end = models.DateField(null=True, blank=True)
+    url = models.URLField()
 
     def __str__(self):
         return '{}, {}, {}'.format(self.person, self.stood_for_party, self.period)
