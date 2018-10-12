@@ -101,6 +101,9 @@ class MemberChange(models.Model):
     change_type = models.CharField(max_length=64, choices=CHANGE_TYPES)
     change_reason = models.TextField()
 
+    class Meta:
+        unique_together = (('person', 'period', 'date', 'change_type'),)
+
 
 class ClubMemberManager(models.Manager):
 
