@@ -149,7 +149,6 @@ class Press(models.Model):
         (TYPE_DRAFTLAW, _('Draft law')),
         (TYPE_REPORT, _('Report')),
     )
-    external_id = models.IntegerField(unique=True)
     press_type = models.CharField(max_length=24, choices=TYPES, db_index=True)
     title = models.TextField()
     press_num = models.CharField(max_length=24, db_index=True)
