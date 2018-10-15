@@ -159,6 +159,7 @@ class Press(models.Model):
     class Meta:
         verbose_name = _('press')
         verbose_name_plural = _('presses')
+        unique_together = (('press_num', 'period'),)
 
     def __str__(self):
         return self.title
@@ -202,6 +203,7 @@ class SessionProgram(models.Model):
 
     class Meta:
         ordering = ('session', 'point')
+        unique_together = (('session', 'point'),)
 
     def __str__(self):
         return '{}. {}'.format(self.point, self.text)
