@@ -195,10 +195,24 @@ class SessionProgram(models.Model):
     """
     Parliament Session Program
     """
+    DISCUSSED = 'discussed'
+    NOTDISCUSSED = 'notdiscussed'
+    MOVED = 'moved'
+    WITHDRAWN = 'withdrawn'
+    INTERRUPTED = 'interrupted'
+
+    STATES = (
+        (DISCUSSED, "Prerokovaný bod programu"),
+        (NOTDISCUSSED, "Neprerokovaný bod programu"),
+        (MOVED, "Presunutý bod programu"),
+        (WITHDRAWN, "Stiahnutý bod programu"),
+        (INTERRUPTED, "Prerušené rokovanie o bode programu")
+    )
+
     session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name='points')
     press = models.ForeignKey(Press, on_delete=models.CASCADE, null=True, blank=True)
     point = models.PositiveIntegerField(null=True, blank=True)
-    state = models.CharField(max_length=128)
+    state = models.CharField(max_length=24, choices=STATES)
     text = models.TextField(null=True, blank=True)
 
     class Meta:
