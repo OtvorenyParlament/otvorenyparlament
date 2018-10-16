@@ -221,7 +221,6 @@ class SessionProgram(models.Model):
 
     class Meta:
         ordering = ('session', 'point')
-        unique_together = (('session', 'press', 'point', 'text1'),)
 
     def __str__(self):
         return '{}. {}'.format(self.point, self.text1)
