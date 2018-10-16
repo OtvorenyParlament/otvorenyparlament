@@ -215,14 +215,16 @@ class SessionProgram(models.Model):
     press = models.ForeignKey(Press, on_delete=models.CASCADE, null=True, blank=True)
     point = models.PositiveIntegerField(null=True, blank=True)
     state = models.CharField(max_length=24, choices=STATES)
-    text = models.TextField(null=True, blank=True)
+    text1 = models.TextField(default='', blank=True)
+    text2 = models.TextField(default='', blank=True)
+    text3 = models.TextField(default='', blank=True)
 
     class Meta:
         ordering = ('session', 'point')
-        unique_together = (('session', 'point'),)
+        unique_together = (('session', 'press', 'point', 'text1'),)
 
     def __str__(self):
-        return '{}. {}'.format(self.point, self.text)
+        return '{}. {}'.format(self.point, self.text1)
 
 
 class SessionAttachment(models.Model):
