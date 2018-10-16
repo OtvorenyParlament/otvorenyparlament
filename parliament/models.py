@@ -26,6 +26,7 @@ class Club(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField(null=True, blank=True)
     external_id = models.IntegerField(unique=True)
+    url = models.URLField()
 
     def __str__(self):
         return self.name
@@ -183,6 +184,7 @@ class Session(models.Model):
     external_id = models.PositiveIntegerField(unique=True)
     period = models.ForeignKey('Period', on_delete=models.CASCADE, related_name='sessions')
     session_num = models.PositiveIntegerField(null=True, blank=True)
+    url = models.URLField()
 
     class Meta:
         ordering = ('-period', '-session_num')
@@ -263,6 +265,7 @@ class Voting(models.Model):
     topic = models.TextField()
     timestamp = models.DateTimeField()
     result = models.CharField(max_length=24, choices=RESULTS)
+    url = models.URLField()
     objects = VotingManager()
 
     class Meta:
