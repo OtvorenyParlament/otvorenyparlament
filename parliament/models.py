@@ -117,9 +117,20 @@ class ClubMemberManager(models.Manager):
 
 
 class ClubMember(models.Model):
+
+    CHAIRMAN = 'chairman'
+    VICECHAIRMAN = 'vice-chairman'
+    MEMBER = 'member'
+
+    MEMBERSHIPS = (
+        (CHAIRMAN, 'Predsedníčka/predseda'),
+        (VICECHAIRMAN, 'Pod-predsedníčka/predseda'),
+        (MEMBER, 'Členka/člen')
+    )
+
     club = models.ForeignKey('Club', on_delete=models.CASCADE)
     member = models.ForeignKey('Member', on_delete=models.CASCADE, related_name='club_memberships')
-    membership = models.CharField(max_length=24, db_index=True, null=True, blank=True)
+    membership = models.CharField(max_length=24, db_index=True, choices=MEMBERSHIPS)
     start = models.DateField(null=True, blank=True)
     end = models.DateField(null=True, blank=True)
     objects = ClubMemberManager()
