@@ -59,9 +59,13 @@ class Member(models.Model):
     end = models.DateField(null=True, blank=True)
     url = models.URLField()
 
+    class Meta:
+        unique_together = (('person', 'period'),)
+
     def __str__(self):
         return '{}, {}, {}'.format(self.person, self.stood_for_party, self.period)
 
+    # TODO(Jozef): This should use MemberChange instead
     @property
     def is_active(self):
         today = timezone.now().date
