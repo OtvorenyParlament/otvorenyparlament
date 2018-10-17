@@ -135,6 +135,9 @@ class ClubMember(models.Model):
     end = models.DateField(null=True, blank=True)
     objects = ClubMemberManager()
 
+    class Meta:
+        unique_together = (('club', 'member', 'membership'),)
+
     def __str__(self):
         return '{} - {}'.format(self.club, self.member)
 
