@@ -320,16 +320,16 @@ class VotingVote(models.Model):
     ABSENT = '0'
 
     OPTIONS = (
-        # (FOR, 'Za'),
-        # (AGAINST, 'Proti'),
-        # (ABSTAIN, 'Zdržal(a) sa'),
-        # (DNV, 'Nehlasoval(a)'),
-        # (ABSENT, 'Neprítomná/ý')
-        (FOR, _('for')),
-        (AGAINST, _('against')),
-        (ABSTAIN, _('abstained')),
-        (DNV, _('did not vote')),
-        (ABSENT, _('absent'))
+        (FOR, 'Za'),
+        (AGAINST, 'Proti'),
+        (ABSTAIN, 'Zdržal(a) sa'),
+        (DNV, 'Nehlasoval(a)'),
+        (ABSENT, 'Neprítomná/ý')
+        # (FOR, _('for')),
+        # (AGAINST, _('against')),
+        # (ABSTAIN, _('abstained')),
+        # (DNV, _('did not vote')),
+        # (ABSENT, _('absent'))
     )
 
     voting = models.ForeignKey(
@@ -345,6 +345,7 @@ class VotingVote(models.Model):
 
     class Meta:
         ordering = ('-voting__session__session_num', '-voting__voting_num',)
+        unique_together = (('voting', 'person'),)
 
     def __str__(self):
         return '{} {} {}'.format(self.voting, self.person, self.vote)
