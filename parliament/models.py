@@ -55,8 +55,6 @@ class Member(models.Model):
         'person.Person', on_delete=models.CASCADE, related_name='memberships')
     period = models.ForeignKey('Period', on_delete=models.CASCADE)
     stood_for_party = models.ForeignKey('Party', on_delete=models.CASCADE)
-    start = models.DateField(null=True, blank=True)
-    end = models.DateField(null=True, blank=True)
     url = models.URLField()
 
     class Meta:
@@ -73,6 +71,19 @@ class Member(models.Model):
         if change.change_type == MemberChange.ACTIVE:
             return True
         return False
+
+
+class MemberActive(models.Model):
+    """
+    Member active periods
+    """
+    member = models.ForeignKey(
+        'Member', on_delete=models.CASCADE, related_name='active')
+    start = models.DateField()
+    end = models.DateField(null=True, blank=True)
+
+    class Meta:
+        unique_together = (('member', 'start'),)
 
 
 class MemberChange(models.Model):
