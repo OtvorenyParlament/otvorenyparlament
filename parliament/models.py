@@ -9,8 +9,8 @@ from django.utils.translation import gettext_lazy as _
 
 class Period(models.Model):
     period_num = models.PositiveIntegerField(verbose_name=_('Period number'))
-    year_start = models.SmallIntegerField()
-    year_end = models.SmallIntegerField(null=True, blank=True)
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
     snap_end = models.BooleanField(default=False)
 
     class Meta:
@@ -18,7 +18,7 @@ class Period(models.Model):
 
     def __str__(self):
         return '{}: {} - {}'.format(
-            self.period_num, self.year_start, self.year_end or '')
+            self.period_num, self.start_date, self.end_date or '')
 
 
 class Club(models.Model):
@@ -65,7 +65,6 @@ class Member(models.Model):
     def __str__(self):
         return '{}, {}, {}'.format(self.person, self.stood_for_party, self.period)
 
-    # TODO(Jozef): This should use MemberChange instead
     @property
     def is_active(self):
         today = timezone.now().date
