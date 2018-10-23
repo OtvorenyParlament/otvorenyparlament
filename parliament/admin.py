@@ -40,7 +40,7 @@ class MemberAdmin(admin.ModelAdmin):
 @admin.register(MemberChange)
 class MemberChangeAdmin(admin.ModelAdmin):
 
-    list_filter = ('period', 'person')
+    list_filter = ('period', 'person', 'change_type')
     list_display = ('period', 'person', 'date', 'change_type')
 
 
