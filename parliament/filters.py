@@ -33,6 +33,42 @@ class MemberFilterSet(django_filters.FilterSet):
 
 class VotingVoteFilterSet(django_filters.FilterSet):
 
+    exclude_for = django_filters.BooleanFilter(
+        field_name='exclude_for', method='filter_exclude_for')
+    exclude_against = django_filters.BooleanFilter(
+        field_name='exclude_against', method='filter_exclude_against')
+    exclude_abstain = django_filters.BooleanFilter(
+        field_name='exclude_abstain', method='filter_exclude_abstain')
+    exclude_dnv = django_filters.BooleanFilter(
+        field_name='exclude_dnv', method='filter_exclude_dnv')
+    exclude_absent = django_filters.BooleanFilter(
+        field_name='exclude_absent', method='filter_exclude_absent')
+
+    def filter_exclude_for(self, queryset, name, value):
+        if value is True:
+            queryset = queryset.exclude(vote=VotingVote.FOR)
+        return queryset
+
+    def filter_exclude_against(self, queryset, name, value):
+        if value is True:
+            queryset = queryset.exclude(vote=VotingVote.AGAINST)
+        return queryset
+
+    def filter_exclude_abstain(self, queryset, name, value):
+        if value is True:
+            queryset = queryset.exclude(vote=VotingVote.ABSTAIN)
+        return queryset
+
+    def filter_exclude_dnv(self, queryset, name, value):
+        if value is True:
+            queryset = queryset.exclude(vote=VotingVote.DNV)
+        return queryset
+
+    def filter_exclude_absent(self, queryset, name, value):
+        if value is True:
+            queryset = queryset.exclude(vote=VotingVote.ABSENT)
+        return queryset
+
     class Meta:
         model = VotingVote
         fields = {
