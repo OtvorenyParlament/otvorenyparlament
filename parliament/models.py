@@ -47,6 +47,14 @@ class Party(models.Model):
         verbose_name_plural = _('Parties')
 
 
+class MemberManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().select_related(
+            'person', 'person__residence', 'period', 'stood_for_party'
+        ).prefetch_related('active')
+
+
 class Member(models.Model):
     """
     Member of parliament during election period
@@ -57,20 +65,13 @@ class Member(models.Model):
     stood_for_party = models.ForeignKey('Party', on_delete=models.CASCADE)
     url = models.URLField()
 
+    objects = MemberManager()
+
     class Meta:
         unique_together = (('person', 'period'),)
 
     def __str__(self):
         return '{}, {}, {}'.format(self.person, self.stood_for_party, self.period)
-
-    @property
-    def is_active(self):
-        today = timezone.now().date
-        date_period = Period.objects.get(start_date__gte=today, end_date__lt=today)
-        change = self.person.changes.filter(period=date_period).order_by('-date').first()
-        if change.change_type == MemberChange.ACTIVE:
-            return True
-        return False
 
 
 class MemberActive(models.Model):
