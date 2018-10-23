@@ -3,15 +3,17 @@ Parliament GraphQL Types and Queries
 """
 
 import graphene
+from graphene.relay import Node
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
 from graphql_utils import CountableConnectionBase, OrderedDjangoFilterConnectionField
-from parliament.filters import VotingVoteFilterSet
+from parliament.filters import MemberFilterSet, VotingVoteFilterSet
 from parliament.models import (
     Club,
     ClubMember,
     Member,
+    MemberActive,
     Period,
     Press,
     # PressAttachment,
@@ -28,7 +30,7 @@ class ClubType(DjangoObjectType):
     class Meta:
         model = Club
         description = 'Club'
-        interfaces = (graphene.relay.Node,)
+        interfaces = (Node,)
         filter_fields = {
             'id': ('exact',),
             'period__period_num': ('exact',)
@@ -41,7 +43,7 @@ class ClubMemberType(DjangoObjectType):
     class Meta:
         model = ClubMember
         description = 'Club Member'
-        interfaces = (graphene.relay.Node,)
+        interfaces = (Node,)
         filter_fields = {
             'id': ('exact',),
             'club': ('exact',)
@@ -54,18 +56,18 @@ class PeriodType(DjangoObjectType):
     class Meta:
         model = Period
         description = 'Period'
-        interfaces = (graphene.relay.Node,)
+        interfaces = (Node,)
         filter_fields = {
             'id': ('exact',),
             'period_num': ('exact',)
         }
-        only_fields = ['id', 'period_num', 'year_start', 'year_end', 'snap_end']
+        only_fields = ['id', 'period_num', 'start_date', 'end_date', 'snap_end']
 
 
 class PressType(DjangoObjectType):
     class Meta:
         model = Press
-        interfaces = (graphene.relay.Node,)
+        interfaces = (Node,)
         filter_fields = {
             'id': ('exact',),
             'press_num': ('exact',),
@@ -77,20 +79,23 @@ class PressType(DjangoObjectType):
 class MemberType(DjangoObjectType):
 
     class Meta:
-        interfaces = (graphene.relay.Node,)
+        interfaces = (Node,)
         model = Member
-        filter_fields = {
-            'id': ('exact',),
-            'stood_for_party': ('exact',),
-            'period__period_num': ('exact',)
-        }
+        connection_class = CountableConnectionBase
+
+
+class MemberActiveType(DjangoObjectType):
+
+    class Meta:
+        interfaces = (Node,)
+        model = MemberActive
         connection_class = CountableConnectionBase
 
 
 class SessionType(DjangoObjectType):
     class Meta:
         model = Session
-        interfaces = (graphene.relay.Node,)
+        interfaces = (Node,)
         filter_fields = {
             'id': ('exact',),
             'session_num': ('exact',),
@@ -102,7 +107,7 @@ class SessionType(DjangoObjectType):
 class SessionProgramPointType(DjangoObjectType):
     class Meta:
         model = SessionProgram
-        interfaces = (graphene.relay.Node,)
+        interfaces = (Node,)
         connection_class = CountableConnectionBase
         filter_fields = {
             'id': ('exact',)
@@ -121,7 +126,7 @@ class VotingType(DjangoObjectType):
     class Meta:
         model = Voting
         connection_class = CountableConnectionBase
-        interfaces = (graphene.relay.Node, )
+        interfaces = (Node, )
         filter_fields = {
             'id': ('exact',),
             'session__session_num': ('exact',),
@@ -156,7 +161,7 @@ class VotingVoteType(DjangoObjectType):
 
     class Meta:
         model = VotingVote
-        interfaces = (graphene.relay.Node, )
+        interfaces = (Node, )
         connection_class = CountableConnectionBase
 
     @classmethod
@@ -182,36 +187,39 @@ class VotingVoteType(DjangoObjectType):
 
 class ParliamentQueries(graphene.ObjectType):
 
-    club = graphene.relay.Node.Field(ClubType)
+    club = Node.Field(ClubType)
     all_clubs = DjangoFilterConnectionField(ClubType)
 
-    club_member = graphene.relay.Node.Field(ClubMemberType)
+    club_member = Node.Field(ClubMemberType)
     all_club_members = DjangoFilterConnectionField(ClubMemberType)
 
-    period = graphene.relay.Node.Field(PeriodType)
+    period = Node.Field(PeriodType)
     all_periods = DjangoFilterConnectionField(PeriodType)
 
-    press = graphene.relay.Node.Field(PressType)
+    press = Node.Field(PressType)
     all_presses = DjangoFilterConnectionField(PressType)
 
-    session = graphene.relay.Node.Field(SessionType)
+    session = Node.Field(SessionType)
     all_sessions = OrderedDjangoFilterConnectionField(
         SessionType, orderBy=graphene.List(of_type=graphene.String))
 
-    session_program_point = graphene.relay.Node.Field(SessionProgramPointType)
+    session_program_point = Node.Field(SessionProgramPointType)
     all_session_program_points = OrderedDjangoFilterConnectionField(
         SessionProgramPointType, orderBy=graphene.List(of_type=graphene.String))
 
-    voting = graphene.relay.Node.Field(VotingType)
+    voting = Node.Field(VotingType)
     all_votings = OrderedDjangoFilterConnectionField(
         VotingType, orderBy=graphene.List(of_type=graphene.String))
 
-    voting_vote = graphene.relay.Node.Field(VotingVoteType)
+    voting_vote = Node.Field(VotingVoteType)
     all_voting_votes = OrderedDjangoFilterConnectionField(
         VotingVoteType,
         orderBy=graphene.List(of_type=graphene.String),
         filterset_class=VotingVoteFilterSet)
 
-    member = graphene.relay.Node.Field(MemberType)
+    member = Node.Field(MemberType)
     all_members = OrderedDjangoFilterConnectionField(
-        MemberType, orderBy=graphene.List(of_type=graphene.String))
+        MemberType,
+        orderBy=graphene.List(of_type=graphene.String),
+        filterset_class=MemberFilterSet,
+    )
