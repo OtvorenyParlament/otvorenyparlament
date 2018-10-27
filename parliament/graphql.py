@@ -33,18 +33,6 @@ class PartyType(DjangoObjectType):
         description = 'Stood For Party'
         interfaces = (Node,)
 
-class ClubType(DjangoObjectType):
-
-    class Meta:
-        model = Club
-        description = 'Club'
-        interfaces = (Node,)
-        filter_fields = {
-            'id': ('exact',),
-            'period__period_num': ('exact',)
-        }
-        only_fields = ['name', 'external_id', 'period']
-
 
 class ClubMemberType(DjangoObjectType):
 
@@ -57,6 +45,19 @@ class ClubMemberType(DjangoObjectType):
             'club': ('exact',)
         }
         only_fields = ['club', 'member', 'membership', 'start', 'end']
+
+
+class ClubType(DjangoObjectType):
+
+    class Meta:
+        model = Club
+        description = 'Club'
+        interfaces = (Node,)
+        filter_fields = {
+            'id': ('exact',),
+            'period__period_num': ('exact',)
+        }
+        only_fields = ['name', 'period', 'members']
 
 
 class PeriodType(DjangoObjectType):
@@ -195,11 +196,11 @@ class VotingVoteType(DjangoObjectType):
 
 class ParliamentQueries(graphene.ObjectType):
 
-    club = Node.Field(ClubType)
-    all_clubs = DjangoFilterConnectionField(ClubType)
-
     club_member = Node.Field(ClubMemberType)
     all_club_members = DjangoFilterConnectionField(ClubMemberType)
+
+    club = Node.Field(ClubType)
+    all_clubs = DjangoFilterConnectionField(ClubType)
 
     period = Node.Field(PeriodType)
     all_periods = DjangoFilterConnectionField(PeriodType)

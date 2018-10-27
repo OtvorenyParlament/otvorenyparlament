@@ -145,7 +145,7 @@ class ClubMember(models.Model):
         (MEMBER, 'Členka/člen')
     )
 
-    club = models.ForeignKey('Club', on_delete=models.CASCADE)
+    club = models.ForeignKey('Club', on_delete=models.CASCADE, related_name='members')
     member = models.ForeignKey('Member', on_delete=models.CASCADE, related_name='club_memberships')
     membership = models.CharField(max_length=24, db_index=True, choices=MEMBERSHIPS, default=NONE)
     start = models.DateField()
