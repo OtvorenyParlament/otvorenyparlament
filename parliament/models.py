@@ -25,8 +25,11 @@ class Club(models.Model):
     period = models.ForeignKey(Period, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     email = models.EmailField(null=True, blank=True)
-    external_id = models.IntegerField(unique=True)
-    url = models.URLField()
+    external_id = models.IntegerField(unique=True, null=True)
+    url = models.URLField(null=True)
+
+    class Meta:
+        unique_together = (('period', 'name'),)
 
     def __str__(self):
         return self.name
@@ -132,8 +135,10 @@ class ClubMember(models.Model):
     CHAIRMAN = 'chairman'
     VICECHAIRMAN = 'vice-chairman'
     MEMBER = 'member'
+    NONE = ''
 
     MEMBERSHIPS = (
+        (NONE, 'Žiadny'),
         (CHAIRMAN, 'Predsedníčka/predseda'),
         (VICECHAIRMAN, 'Pod-predsedníčka/predseda'),
         (MEMBER, 'Členka/člen')
@@ -141,13 +146,13 @@ class ClubMember(models.Model):
 
     club = models.ForeignKey('Club', on_delete=models.CASCADE)
     member = models.ForeignKey('Member', on_delete=models.CASCADE, related_name='club_memberships')
-    membership = models.CharField(max_length=24, db_index=True, choices=MEMBERSHIPS)
-    start = models.DateField(null=True, blank=True)
+    membership = models.CharField(max_length=24, db_index=True, choices=MEMBERSHIPS, default=NONE)
+    start = models.DateField()
     end = models.DateField(null=True, blank=True)
     objects = ClubMemberManager()
 
     class Meta:
-        unique_together = (('club', 'member', 'membership'),)
+        unique_together = (('club', 'member', 'start'),)
 
     def __str__(self):
         return '{} - {}'.format(self.club, self.member)
