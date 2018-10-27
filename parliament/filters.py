@@ -6,7 +6,28 @@ from django.db.models import Q
 from django.utils import timezone
 import django_filters
 
-from parliament.models import Member, MemberChange, Period, VotingVote
+from parliament.models import ClubMember, Member, MemberChange, Period, VotingVote
+
+
+class ClubMemberFilterSet(django_filters.FilterSet):
+
+    is_current_member = django_filters.DateFilter(
+        field_name='is_current_member', method='filter_is_current_member')
+
+    def filter_is_current_member(self, queryset, name, value):
+        queryset = queryset.filter(
+            Q(start__lte=value),
+            Q(end__gt=value) | Q(end__isnull=True)
+        )
+        return queryset
+
+    class Meta:
+        model = ClubMember
+        fields = {
+            'id': ('exact',),
+            'club': ('exact',),
+            'club__name': ('exact', 'icontains'),
+        }
 
 
 class MemberFilterSet(django_filters.FilterSet):

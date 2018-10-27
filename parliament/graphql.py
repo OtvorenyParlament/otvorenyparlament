@@ -8,7 +8,11 @@ from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
 from graphql_utils import CountableConnectionBase, OrderedDjangoFilterConnectionField
-from parliament.filters import MemberFilterSet, VotingVoteFilterSet
+from parliament.filters import (
+    ClubMemberFilterSet,
+    MemberFilterSet,
+    VotingVoteFilterSet
+)
 from parliament.models import (
     Club,
     ClubMember,
@@ -40,10 +44,6 @@ class ClubMemberType(DjangoObjectType):
         model = ClubMember
         description = 'Club Member'
         interfaces = (Node,)
-        filter_fields = {
-            'id': ('exact',),
-            'club': ('exact',)
-        }
         only_fields = ['club', 'member', 'membership', 'start', 'end']
 
 
@@ -197,10 +197,14 @@ class VotingVoteType(DjangoObjectType):
 class ParliamentQueries(graphene.ObjectType):
 
     club_member = Node.Field(ClubMemberType)
-    all_club_members = DjangoFilterConnectionField(ClubMemberType)
+    all_club_members = OrderedDjangoFilterConnectionField(
+        ClubMemberType,
+        orderBy=graphene.List(of_type=graphene.String),
+        filterset_class=ClubMemberFilterSet
+    )
 
     club = Node.Field(ClubType)
-    all_clubs = DjangoFilterConnectionField(ClubType)
+    all_clubs = OrderedDjangoFilterConnectionField(ClubType)
 
     period = Node.Field(PeriodType)
     all_periods = DjangoFilterConnectionField(PeriodType)
