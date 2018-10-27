@@ -88,6 +88,7 @@ class MemberActive(models.Model):
 
     class Meta:
         unique_together = (('member', 'start'),)
+        ordering = ('member', 'start',)
 
 
 class MemberChange(models.Model):
@@ -153,6 +154,7 @@ class ClubMember(models.Model):
 
     class Meta:
         unique_together = (('club', 'member', 'start'),)
+        ordering = ('club', 'member', 'start')
 
     def __str__(self):
         return '{} - {}'.format(self.club, self.member)

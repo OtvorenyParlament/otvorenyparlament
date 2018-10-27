@@ -14,6 +14,7 @@ from parliament.models import (
     ClubMember,
     Member,
     MemberActive,
+    Party,
     Period,
     Press,
     # PressAttachment,
@@ -24,6 +25,13 @@ from parliament.models import (
     VotingVote,
 )
 
+
+class PartyType(DjangoObjectType):
+
+    class Meta:
+        model = Party
+        description = 'Stood For Party'
+        interfaces = (Node,)
 
 class ClubType(DjangoObjectType):
 
