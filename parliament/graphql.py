@@ -14,6 +14,8 @@ from parliament.filters import (
     VotingVoteFilterSet
 )
 from parliament.models import (
+    Bill,
+    BillProcessStep,
     Club,
     ClubMember,
     Member,
@@ -197,6 +199,22 @@ class VotingVoteType(DjangoObjectType):
         return CountableConnection
 
 
+class BillType(DjangoObjectType):
+
+    class Meta:
+        model = Bill
+        interfaces = (Node,)
+        connection_class = CountableConnectionBase
+
+
+class BillProcessStepType(DjangoObjectType):
+
+    class Meta:
+        model = BillProcessStep
+        interfaces = (Node,)
+        connection_class = CountableConnectionBase
+
+
 class ParliamentQueries(graphene.ObjectType):
 
     club_member = Node.Field(ClubMemberType)
@@ -238,4 +256,16 @@ class ParliamentQueries(graphene.ObjectType):
         MemberType,
         orderBy=graphene.List(of_type=graphene.String),
         filterset_class=MemberFilterSet,
+    )
+
+    bill = Node.Field(BillType)
+    all_bills = OrderedDjangoFilterConnectionField(
+        BillType,
+        orderBy=graphene.List(of_type=graphene.String),
+    )
+
+    bill_process_step = Node.Field(BillProcessStepType)
+    all_bill_process_steps = OrderedDjangoFilterConnectionField(
+        BillProcessStepType,
+        orderBy=graphene.List(of_type=graphene.String),
     )

@@ -4,8 +4,19 @@ Parliament Admin Views
 
 from django.contrib import admin
 
-from parliament.models import (Club, ClubMember, Member, MemberChange, Party,
+from parliament.models import (Bill, BillProcessStep, Club, ClubMember, Member, MemberChange, Party,
                                Period, Press, Session, Voting, VotingVote)
+
+
+@admin.register(Bill)
+class BillAdmin(admin.ModelAdmin):
+
+    pass
+
+@admin.register(BillProcessStep)
+class BillStepProcessAdmin(admin.ModelAdmin):
+
+    pass
 
 
 @admin.register(Club)
