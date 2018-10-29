@@ -45,6 +45,7 @@ class ClubMemberType(DjangoObjectType):
         description = 'Club Member'
         interfaces = (Node,)
         only_fields = ['club', 'member', 'membership', 'start', 'end']
+        connection_class = CountableConnectionBase
 
 
 class ClubType(DjangoObjectType):

@@ -27,6 +27,7 @@ class ClubMemberFilterSet(django_filters.FilterSet):
             'id': ('exact',),
             'club': ('exact',),
             'club__name': ('exact', 'icontains'),
+            'member__period__period_num': ('exact',),
         }
 
 
