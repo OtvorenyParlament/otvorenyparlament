@@ -194,14 +194,14 @@ class Press(models.Model):
     TYPE_INT_AGREEMENT = 'intag'
     TYPE_PETITION = 'petition'
     TYPE_INFORMATION = 'information'
-    TYPE_DRAFTLAW = 'draftlaw'
+    TYPE_BILL = 'bill'
     TYPE_REPORT = 'report'
     TYPES = (
         (TYPE_OTHER, _('Other type')),
         (TYPE_INT_AGREEMENT, _('International agreement')),
         (TYPE_PETITION, _('Petition')),
         (TYPE_INFORMATION, _('Information')),
-        (TYPE_DRAFTLAW, _('Draft law')),
+        (TYPE_BILL, _('Bill')),
         (TYPE_REPORT, _('Report')),
     )
     press_type = models.CharField(max_length=24, choices=TYPES, db_index=True)
@@ -385,3 +385,145 @@ class VotingVote(models.Model):
 
     def __str__(self):
         return '{} {} {}'.format(self.voting, self.person, self.vote)
+
+
+class Bill(models.Model):
+    EVIDENCE = 'evidence'
+    CLOSED_TASK = 'closedtask'
+    READING_1 = 'reading_1'
+    READING_2 = 'reading_2'
+    READING_3 = 'reading_3'
+    REDACTION = 'redaction'
+    COMMITTEE_DISCUSSION = 'committeediscussion'
+    STANDPOINT = 'standpoint'
+    COUNCIL_DISCUSSION = 'councildiscussion'
+    COORDINATOR_DISCUSSION = 'coordinatordiscussion'
+
+    STATES = (
+        (EVIDENCE, "Evidencia"),
+        (CLOSED_TASK, "Uzavretá úloha"),
+        (READING_1, "I. čítanie"),
+        (READING_2, "II. čítanie"),
+        (READING_3, "III. čítanie"),
+        (REDACTION, "Redakcia"),
+        (COMMITTEE_DISCUSSION, "Rokovanie výboru"),
+        (STANDPOINT, "Stanovisko k NZ"),
+        (COUNCIL_DISCUSSION, "Rokovanie NR SR"),
+        (COORDINATOR_DISCUSSION, "Rokovanie gestorského výboru"),
+    )
+
+    WONT_CONTINUE = 'wontcontinue'
+    RESOLUTION_WRITING = 'resolutionwriting'
+    IN_REDACTION = 'inredaction'
+    TAKEN_BACK = 'takenback'
+    COMMITTEES_REPORT = 'committeesreport'
+    WASNOT_APPROVED = 'wasnotapproved'
+    INFO_READY = 'infoready'
+    PUBLISHED = 'published'
+    VETOPRES = 'vetopres'
+    COMMITTEE_RESOLUTION_WRITING = 'comreswriting'
+
+    RESULTS = (
+        (WONT_CONTINUE, "NR SR nebude pokračovať v rokovaní o návrhu zákona"),
+        (RESOLUTION_WRITING, "Zápis uznesenia NR SR"),
+        (IN_REDACTION, "NZ postúpil do redakcie"),
+        (TAKEN_BACK, "NZ vzal navrhovateľ späť"),
+        (READING_2, "NZ postúpil do II. čítania"),
+        (COMMITTEES_REPORT, "Zápis spoločnej správy výborov"),
+        (WASNOT_APPROVED, "NZ nebol schválený"),
+        (INFO_READY, "Pripravená informácia k NZ"),
+        (PUBLISHED, "Zákon vyšiel v Zbierke zákonov"),
+        (VETOPRES, "Zákon bol vrátený prezidentom"),
+        (COMMITTEE_RESOLUTION_WRITING, "Zapísané uznesenie výboru")
+    )
+    external_id = models.PositiveIntegerField()
+    press = models.ForeignKey(Press, on_delete=models.CASCADE)
+    delivered = models.DateField()
+    proposer_nonmember = models.CharField(max_length=255, default='')
+    proposers = models.ManyToManyField(Member)
+    current_state = models.CharField(max_length=32, choices=STATES)
+    current_result = models.CharField(max_length=32, choices=RESULTS)
+    url = models.URLField()
+
+
+class BillProcessStep(models.Model):
+    # TODO: Add more types
+
+    REGISTRY = 'registry'
+    CHAIR_DECISION = 'chairdecision'
+    READING_1 = 'reading1'
+    READING_2 = 'reading2'
+    READING_3 = 'reading3'
+    COORDINATOR_DISCUSSION = 'coordinatordiscussion'
+    COMMITTEES_DISCUSSION = 'committeesdiscussion'
+    REDACTION = 'redaction'
+
+    TYPES = (
+        (REGISTRY, "Podateľňa"),
+        (CHAIR_DECISION, "Rozhodnutie predsedu NR SR"),
+        (READING_1, "I. čítanie"),
+        (READING_2, "II. čítanie"),
+        (READING_3, "III. čítanie"),
+        (COORDINATOR_DISCUSSION, "Rokovanie gestorského výboru"),
+        (COMMITTEES_DISCUSSION, "Rokovanie výborov"),
+        (REDACTION, "Redakcia"),
+    )
+
+    TAKEN_BACK = 'takenback'
+    WONT_CONTINUE = 'wontocntinue'
+    WASNOT_APPROVED = 'wasnotapproved'
+    PRESIDENTIAL_VETO = 'presidentialveto'
+    COMMITTEE_RESOLUTION_WRITING = 'commresolutionwriting'
+    PUBLISHED = 'published'
+    PREPARING_INFO = 'preparinginfo'
+    TO_REDACTION = 'toredaction'
+
+    RESULTS = (
+        (CHAIR_DECISION, "Zapísané rozhodnutie predsedu NR SR"),
+        (PREPARING_INFO, "Príprava informácie k NZ"),
+        (TAKEN_BACK, "NZ vzal navrhovateľ späť"),
+        (WONT_CONTINUE, "NR SR nebude pokračovať v rokovaní o návrhu zákona"),
+        (PUBLISHED, "Zákon vyšiel v Zbierke zákonov."),
+        (TO_REDACTION, "NZ postupuje do redakcie"),
+        (READING_3, "NZ postúpil do III. čítania"),
+        (COMMITTEE_RESOLUTION_WRITING, "Zápis uznesenia / návrhu uznesenia výborov"),
+        (WASNOT_APPROVED, "NZ nebol schválený"),
+        (PRESIDENTIAL_VETO, "Zákon bol vrátený prezidentom.")
+    )
+
+    STANDPOINT_DISCORDANT = 'discordant'
+    STANDPOINT_CONFORMABLE = 'conformable'
+
+    STANDPOINTS = (
+        (STANDPOINT_CONFORMABLE, 'Súhlasný'),
+        (STANDPOINT_DISCORDANT, 'Nesúhlasný')
+    )
+    external_id = models.PositiveIntegerField()
+    bill = models.ForeignKey(Bill, on_delete=models.CASCADE)
+    step_type = models.CharField(max_length=24, choices=TYPES) # body label
+    step_result = models.CharField(max_length=64, choices=RESULTS)
+    meeting_session = models.ForeignKey('Session', on_delete=models.CASCADE)
+    meeting_resolution = models.PositiveIntegerField(null=True, blank=True)
+    meeting_resolution_date = models.DateField(null=True, blank=True)
+    committees_label = models.TextField(default='')
+    slk_label = models.TextField(default='')
+    coordinator_label = models.TextField(default='')
+    coordinator_meeting_date = models.DateField(blank=True, null=True)
+    coordinator_name = models.CharField(max_length=255, default='')
+    discussed_label = models.CharField(max_length=255, default='')
+    sent_standpoint = models.CharField(max_length=12, choices=STANDPOINTS)
+    sent_label = models.DateField(null=True, blank=True)
+    act_num_label = models.CharField(max_length=12)
+
+# class BillAmendment(models.Model):
+#     bill_step = models.ForeignKey(BillProcessStep, on_delete=models.CASCADE)
+#     date = models.DateField()
+#     author = models.ForeignKey(Member, on_delete=models.CASCADE)
+
+
+# class BillProcessStepAttachment(models.Model):
+
+#     bill_process = models.ForeignKey(BillProcessStep, on_delete=models.CASCADE)
+#     title = models.TextField(max_length=512, default='missing title')
+#     url = models.URLField()
+#     file = models.FilePathField(null=True, blank=True)
