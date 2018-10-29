@@ -2,6 +2,8 @@
 Parliament Models
 """
 
+from datetime import datetime
+
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -21,6 +23,11 @@ class Period(models.Model):
             self.period_num, self.start_date, self.end_date or '')
 
 
+class ClubManaber(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().select_related('period')
+
 class Club(models.Model):
     period = models.ForeignKey(Period, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
@@ -28,11 +35,22 @@ class Club(models.Model):
     external_id = models.IntegerField(unique=True, null=True)
     url = models.URLField(null=True)
 
+    objects = ClubManaber()
+
     class Meta:
         unique_together = (('period', 'name'),)
 
     def __str__(self):
         return self.name
+
+    @property
+    def current_member_count(self):
+        today = datetime.utcnow().date()
+        return self.members.filter(
+            models.Q(start__lte=today),
+            models.Q(end__gt=today) | models.Q(end__isnull=True)
+        ).count()
+        return self.members.count()
 
 
 class Party(models.Model):

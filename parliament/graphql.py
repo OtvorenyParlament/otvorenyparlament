@@ -50,6 +50,8 @@ class ClubMemberType(DjangoObjectType):
 
 class ClubType(DjangoObjectType):
 
+    current_member_count = graphene.Int()
+
     class Meta:
         model = Club
         description = 'Club'
@@ -58,7 +60,7 @@ class ClubType(DjangoObjectType):
             'id': ('exact',),
             'period__period_num': ('exact',)
         }
-        only_fields = ['name', 'period', 'members']
+        only_fields = ['name', 'period', 'members', 'current_member_count']
 
 
 class PeriodType(DjangoObjectType):
