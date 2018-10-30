@@ -7,6 +7,7 @@ from datetime import datetime
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from djchoices import DjangoChoices, ChoiceItem
 
 
 class Period(models.Model):
@@ -388,120 +389,82 @@ class VotingVote(models.Model):
 
 
 class Bill(models.Model):
-    EVIDENCE = 'evidence'
-    CLOSED_TASK = 'closedtask'
-    READING_1 = 'reading_1'
-    READING_2 = 'reading_2'
-    READING_3 = 'reading_3'
-    REDACTION = 'redaction'
-    COMMITTEE_DISCUSSION = 'committeediscussion'
-    STANDPOINT = 'standpoint'
-    COUNCIL_DISCUSSION = 'councildiscussion'
-    COORDINATOR_DISCUSSION = 'coordinatordiscussion'
 
-    STATES = (
-        (EVIDENCE, "Evidencia"),
-        (CLOSED_TASK, "Uzavretá úloha"),
-        (READING_1, "I. čítanie"),
-        (READING_2, "II. čítanie"),
-        (READING_3, "III. čítanie"),
-        (REDACTION, "Redakcia"),
-        (COMMITTEE_DISCUSSION, "Rokovanie výboru"),
-        (STANDPOINT, "Stanovisko k NZ"),
-        (COUNCIL_DISCUSSION, "Rokovanie NR SR"),
-        (COORDINATOR_DISCUSSION, "Rokovanie gestorského výboru"),
-    )
+    class StateChoices(DjangoChoices):
+        evidence = ChoiceItem(0, "Evidencia")
+        closed_task = ChoiceItem(1, "Uzavretá úloha")
+        reading_1 = ChoiceItem(2, "I. čítanie")
+        reading_2 = ChoiceItem(3, "II. čítanie")
+        reading_3 = ChoiceItem(4, "III. čítanie")
+        redaction = ChoiceItem(5, "Redakcia")
+        committee_discussion = ChoiceItem(6, "Rokovanie výboru")
+        standpoint = ChoiceItem(7, "Stanovisko k NZ")
+        council_discussion = ChoiceItem(8, "Rokovanie NR SR")
+        coordinator_discussion = ChoiceItem(9, "Rokovanie gestorského výboru")
+        advisor_selection = ChoiceItem(10, "Výber poradcov k NZ")
 
-    WONT_CONTINUE = 'wontcontinue'
-    RESOLUTION_WRITING = 'resolutionwriting'
-    IN_REDACTION = 'inredaction'
-    TAKEN_BACK = 'takenback'
-    COMMITTEES_REPORT = 'committeesreport'
-    WASNOT_APPROVED = 'wasnotapproved'
-    INFO_READY = 'infoready'
-    PUBLISHED = 'published'
-    VETOPRES = 'vetopres'
-    COMMITTEE_RESOLUTION_WRITING = 'comreswriting'
+    class ResultChoices(DjangoChoices):
+        wont_continue = ChoiceItem(0, "NR SR nebude pokračovať v rokovaní o návrhu zákona")
+        taken_back = ChoiceItem(1, "NZ vzal navrhovateľ späť")
+        resolution_writing = ChoiceItem(2, "Zápis uznesenia NR SR")
+        in_redaction = ChoiceItem(3, "NZ postúpil do redakcie")
+        committees_report = ChoiceItem(4, "Zápis spoločnej správy výborov")
+        wasnot_approved = ChoiceItem(5, "NZ nebol schválený")
+        info_ready = ChoiceItem(6, "Pripravená informácia k NZ")
+        published = ChoiceItem(7, "Zákon vyšiel v Zbierke zákonov")
+        presidential_veto = ChoiceItem(8, "Zákon bol vrátený prezidentom")
+        committee_resolution_writing = ChoiceItem(9, "Zapísané uznesenie výboru")
+        legal_selection = ChoiceItem(10, "Výber právneho poradcu")
+        reading_2 = ChoiceItem(11, "NZ postúpil do II. čítania")
 
-    RESULTS = (
-        (WONT_CONTINUE, "NR SR nebude pokračovať v rokovaní o návrhu zákona"),
-        (RESOLUTION_WRITING, "Zápis uznesenia NR SR"),
-        (IN_REDACTION, "NZ postúpil do redakcie"),
-        (TAKEN_BACK, "NZ vzal navrhovateľ späť"),
-        (READING_2, "NZ postúpil do II. čítania"),
-        (COMMITTEES_REPORT, "Zápis spoločnej správy výborov"),
-        (WASNOT_APPROVED, "NZ nebol schválený"),
-        (INFO_READY, "Pripravená informácia k NZ"),
-        (PUBLISHED, "Zákon vyšiel v Zbierke zákonov"),
-        (VETOPRES, "Zákon bol vrátený prezidentom"),
-        (COMMITTEE_RESOLUTION_WRITING, "Zapísané uznesenie výboru")
-    )
-    external_id = models.PositiveIntegerField()
+    external_id = models.PositiveIntegerField(unique=True)
     press = models.ForeignKey(Press, on_delete=models.CASCADE)
     delivered = models.DateField()
     proposer_nonmember = models.CharField(max_length=255, default='')
     proposers = models.ManyToManyField(Member)
-    current_state = models.CharField(max_length=32, choices=STATES)
-    current_result = models.CharField(max_length=32, choices=RESULTS)
+    current_state = models.SmallIntegerField(choices=StateChoices.choices)
+    current_result = models.SmallIntegerField(choices=ResultChoices.choices)
     url = models.URLField()
 
 
 class BillProcessStep(models.Model):
     # TODO: Add more types
 
-    REGISTRY = 'registry'
-    CHAIR_DECISION = 'chairdecision'
-    READING_1 = 'reading1'
-    READING_2 = 'reading2'
-    READING_3 = 'reading3'
-    COORDINATOR_DISCUSSION = 'coordinatordiscussion'
-    COMMITTEES_DISCUSSION = 'committeesdiscussion'
-    REDACTION = 'redaction'
+    class StepTypes(DjangoChoices):
+        registry = ChoiceItem(0, "Podateľňa")
+        chair_decision = ChoiceItem(1, "Rozhodnutie predsedu NR SR")
+        reading_1 = ChoiceItem(2, "I. čítanie")
+        reading_2 = ChoiceItem(3, "II. čítanie")
+        reading_3 = ChoiceItem(4, "III. čítanie")
+        coordinator_discussion = ChoiceItem(5, "Rokovanie gestorského výboru")
+        committees_discussion = ChoiceItem(6, "Rokovanie výborov")
+        redaction = ChoiceItem(7, "Redakcia")
 
-    TYPES = (
-        (REGISTRY, "Podateľňa"),
-        (CHAIR_DECISION, "Rozhodnutie predsedu NR SR"),
-        (READING_1, "I. čítanie"),
-        (READING_2, "II. čítanie"),
-        (READING_3, "III. čítanie"),
-        (COORDINATOR_DISCUSSION, "Rokovanie gestorského výboru"),
-        (COMMITTEES_DISCUSSION, "Rokovanie výborov"),
-        (REDACTION, "Redakcia"),
-    )
+    class ResultTypes(DjangoChoices):
+        chair_decision = ChoiceItem(0, "Zapísané rozhodnutie predsedu NR SR")
+        preparing_info = ChoiceItem(1, "Príprava informácie k NZ")
+        taken_back = ChoiceItem(2, "NZ vzal navrhovateľ späť")
+        wont_continue = ChoiceItem(3, "NR SR nebude pokračovať v rokovaní o návrhu zákona")
+        published = ChoiceItem(4, "Zákon vyšiel v Zbierke zákonov.")
+        to_redaction = ChoiceItem(5, "NZ postupuje do redakcie")
+        reading_1 = ChoiceItem(6, "NZ postúpil do I. čítania")
+        reading_2 = ChoiceItem(7, "NZ postúpil do II. čítania")
+        reading_3 = ChoiceItem(8, "NZ postúpil do III. čítania")
+        committee_resolution_writing = ChoiceItem(9, "Zápis uznesenia / návrhu uznesenia výborov")
+        wasnot_approved = ChoiceItem(10, "NZ nebol schválený")
+        presidential_veto = ChoiceItem(11, "Zákon bol vrátený prezidentom.")
 
-    TAKEN_BACK = 'takenback'
-    WONT_CONTINUE = 'wontocntinue'
-    WASNOT_APPROVED = 'wasnotapproved'
-    PRESIDENTIAL_VETO = 'presidentialveto'
-    COMMITTEE_RESOLUTION_WRITING = 'commresolutionwriting'
-    PUBLISHED = 'published'
-    PREPARING_INFO = 'preparinginfo'
-    TO_REDACTION = 'toredaction'
-
-    RESULTS = (
-        (CHAIR_DECISION, "Zapísané rozhodnutie predsedu NR SR"),
-        (PREPARING_INFO, "Príprava informácie k NZ"),
-        (TAKEN_BACK, "NZ vzal navrhovateľ späť"),
-        (WONT_CONTINUE, "NR SR nebude pokračovať v rokovaní o návrhu zákona"),
-        (PUBLISHED, "Zákon vyšiel v Zbierke zákonov."),
-        (TO_REDACTION, "NZ postupuje do redakcie"),
-        (READING_3, "NZ postúpil do III. čítania"),
-        (COMMITTEE_RESOLUTION_WRITING, "Zápis uznesenia / návrhu uznesenia výborov"),
-        (WASNOT_APPROVED, "NZ nebol schválený"),
-        (PRESIDENTIAL_VETO, "Zákon bol vrátený prezidentom.")
-    )
-
-    STANDPOINT_DISCORDANT = 'discordant'
-    STANDPOINT_CONFORMABLE = 'conformable'
+    STANDPOINT_DISCORDANT = 0
+    STANDPOINT_CONFORMABLE = 1
 
     STANDPOINTS = (
         (STANDPOINT_CONFORMABLE, 'Súhlasný'),
         (STANDPOINT_DISCORDANT, 'Nesúhlasný')
     )
-    external_id = models.PositiveIntegerField()
+    external_id = models.PositiveIntegerField(unique=True)
     bill = models.ForeignKey(Bill, on_delete=models.CASCADE)
-    step_type = models.CharField(max_length=24, choices=TYPES) # body label
-    step_result = models.CharField(max_length=64, choices=RESULTS)
+    step_type = models.SmallIntegerField(choices=StepTypes.choices) # body label
+    step_result = models.SmallIntegerField(choices=ResultTypes.choices)
     meeting_session = models.ForeignKey('Session', on_delete=models.CASCADE)
     meeting_resolution = models.PositiveIntegerField(null=True, blank=True)
     meeting_resolution_date = models.DateField(null=True, blank=True)
@@ -511,7 +474,7 @@ class BillProcessStep(models.Model):
     coordinator_meeting_date = models.DateField(blank=True, null=True)
     coordinator_name = models.CharField(max_length=255, default='')
     discussed_label = models.CharField(max_length=255, default='')
-    sent_standpoint = models.CharField(max_length=12, choices=STANDPOINTS)
+    sent_standpoint = models.SmallIntegerField(choices=STANDPOINTS)
     sent_label = models.DateField(null=True, blank=True)
     act_num_label = models.CharField(max_length=12)
 
