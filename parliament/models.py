@@ -284,13 +284,13 @@ class VotingManager(models.Manager):
 
 
 class Voting(models.Model):
-    PASSED = 'passed'
-    DID_NOT_PASS = 'did_not_pass'
-    PARLIAMENT_UNABLE = 'parliament_unable'
+    PASSED = 0
+    DID_NOT_PASS = 1
+    INQUORATE = 2
     RESULTS = (
         (PASSED, 'Návrh prešiel'),
         (DID_NOT_PASS, 'Návrh neprešiel'),
-        (PARLIAMENT_UNABLE, 'Parlament nebol uznášaniaschopný')
+        (INQUORATE, 'Parlament nebol uznášaniaschopný')
     )
     external_id = models.PositiveIntegerField(unique=True)
     session = models.ForeignKey(
@@ -304,7 +304,7 @@ class Voting(models.Model):
     voting_num = models.PositiveIntegerField()
     topic = models.TextField()
     timestamp = models.DateTimeField()
-    result = models.CharField(max_length=24, choices=RESULTS)
+    result = models.SmallIntegerField(choices=RESULTS)
     url = models.URLField()
     objects = VotingManager()
 
@@ -361,7 +361,7 @@ class VotingVote(models.Model):
         related_name='votes',
         null=True,
         blank=True)
-    vote = models.CharField(max_length=4, choices=OPTIONS)
+    vote = models.CharField(max_length=1, choices=OPTIONS)
     objects = VotingVoteManager()
 
     class Meta:
