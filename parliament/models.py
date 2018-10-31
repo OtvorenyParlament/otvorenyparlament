@@ -114,30 +114,20 @@ class MemberChange(models.Model):
     """
     Membership changes
     """
-
-    MANDATE_NOT_APPLIED = 'mandatenotapplied'
-    ACTIVE = 'active'
-    SUBSTITUTE_FOLDED = 'substitutefolded'
-    SUBSTITUTE_ACTIVE = 'substituteactive'
-    SUBSTITUTE_GAINED = 'substitutegained'
-    FOLDED = 'folded'
-    GAINED = 'gained'
-
-    CHANGE_TYPES = (
-        (MANDATE_NOT_APPLIED, "Mandát sa neuplatňuje"),
-        (ACTIVE, "Mandát vykonávaný (aktívny poslanec)"),
-        (SUBSTITUTE_FOLDED, "Mandát náhradníka zaniknutý"),
-        (SUBSTITUTE_ACTIVE, "Mandát náhradníka vykonávaný"),
-        (SUBSTITUTE_GAINED, "Mandát náhradníka získaný"),
-        (FOLDED, "Mandát zaniknutý"),
-        (GAINED, "Mandát nadobudnutý vo voľbách")
-    )
+    class ChangeType(DjangoChoices):
+        mandate_not_applied = ChoiceItem(0, "Mandát sa neuplatňuje")
+        active = ChoiceItem(1, "Mandát vykonávaný (aktívny poslanec)")
+        substitute_folded = ChoiceItem(2, "Mandát náhradníka zaniknutý")
+        substitute_active = ChoiceItem(3, "Mandát náhradníka vykonávaný")
+        substitute_gained = ChoiceItem(4, "Mandát náhradníka získaný")
+        folded = ChoiceItem(5, "Mandát zaniknutý")
+        gained = ChoiceItem(6, "Mandát nadobudnutý vo voľbách")
 
     person = models.ForeignKey(
         'person.Person', on_delete=models.CASCADE, related_name='changes')
     period = models.ForeignKey('Period', on_delete=models.CASCADE)
     date = models.DateField()
-    change_type = models.CharField(max_length=64, choices=CHANGE_TYPES)
+    change_type = models.PositiveSmallIntegerField(choices=ChangeType.choices)
     change_reason = models.TextField()
 
     class Meta:
@@ -252,24 +242,18 @@ class SessionProgram(models.Model):
     """
     Parliament Session Program
     """
-    DISCUSSED = 'discussed'
-    NOTDISCUSSED = 'notdiscussed'
-    MOVED = 'moved'
-    WITHDRAWN = 'withdrawn'
-    INTERRUPTED = 'interrupted'
 
-    STATES = (
-        (DISCUSSED, "Prerokovaný bod programu"),
-        (NOTDISCUSSED, "Neprerokovaný bod programu"),
-        (MOVED, "Presunutý bod programu"),
-        (WITHDRAWN, "Stiahnutý bod programu"),
-        (INTERRUPTED, "Prerušené rokovanie o bode programu")
-    )
+    class StateType(DjangoChoices):
+        discussed = ChoiceItem(0, "Prerokovaný bod programu")
+        notdiscussed = ChoiceItem(1, "Neprerokovaný bod programu")
+        moved = ChoiceItem(2, "Presunutý bod programu")
+        withdrawn = ChoiceItem(3, "Stiahnutý bod programu")
+        interrupted = ChoiceItem(4, "Prerušené rokovanie o bode programu")
 
     session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name='points')
     press = models.ForeignKey(Press, on_delete=models.CASCADE, null=True, blank=True)
-    point = models.PositiveIntegerField(null=True, blank=True)
-    state = models.CharField(max_length=24, choices=STATES)
+    point = models.PositiveSmallIntegerField(null=True, blank=True)
+    state = models.SmallIntegerField(choices=StateType.choices)
     text1 = models.TextField(default='', blank=True)
     text2 = models.TextField(default='', blank=True)
     text3 = models.TextField(default='', blank=True)
