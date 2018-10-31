@@ -390,7 +390,19 @@ class VotingVote(models.Model):
 
 class Bill(models.Model):
 
-    class StateChoices(DjangoChoices):
+    class Category(DjangoChoices):
+        act_amendment = ChoiceItem(0, "Novela zákona")
+        bill = ChoiceItem(1, "Návrh nového zákona")
+        other = ChoiceItem(2, "Iný typ")
+        petition = ChoiceItem(3, "Petícia")
+        international_treaty = ChoiceItem(4, "Medzinárodná zmluva")
+        report = ChoiceItem(5, "Správa")
+        constitutional_law = ChoiceItem(6, "Ústavný zákon")
+        information = ChoiceItem(7, "Informácia")
+        budget_law = ChoiceItem(8, "Návrh zákona o štátnom rozpočte")
+        presidential_veto = ChoiceItem(9, "Zákon vrátený prezidentom")
+
+    class State(DjangoChoices):
         evidence = ChoiceItem(0, "Evidencia")
         closed_task = ChoiceItem(1, "Uzavretá úloha")
         reading_1 = ChoiceItem(2, "I. čítanie")
@@ -403,7 +415,7 @@ class Bill(models.Model):
         coordinator_discussion = ChoiceItem(9, "Rokovanie gestorského výboru")
         advisor_selection = ChoiceItem(10, "Výber poradcov k NZ")
 
-    class ResultChoices(DjangoChoices):
+    class Result(DjangoChoices):
         wont_continue = ChoiceItem(0, "NR SR nebude pokračovať v rokovaní o návrhu zákona")
         taken_back = ChoiceItem(1, "NZ vzal navrhovateľ späť")
         resolution_writing = ChoiceItem(2, "Zápis uznesenia NR SR")
@@ -418,12 +430,13 @@ class Bill(models.Model):
         reading_2 = ChoiceItem(11, "NZ postúpil do II. čítania")
 
     external_id = models.PositiveIntegerField(unique=True)
+    category = models.SmallIntegerField(choices=Category.choices)
     press = models.ForeignKey(Press, on_delete=models.CASCADE)
     delivered = models.DateField()
     proposer_nonmember = models.CharField(max_length=255, default='')
     proposers = models.ManyToManyField(Member)
-    current_state = models.SmallIntegerField(choices=StateChoices.choices)
-    current_result = models.SmallIntegerField(choices=ResultChoices.choices)
+    state = models.SmallIntegerField(choices=State.choices, null=True, blank=True)
+    result = models.SmallIntegerField(choices=Result.choices, null=True, blank=True)
     url = models.URLField()
 
 
