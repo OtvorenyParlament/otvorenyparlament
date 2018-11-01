@@ -188,7 +188,7 @@ class Press(models.Model):
     """
 
     class PressType(DocumentCategory):
-        pass
+        bill = ChoiceItem(1, "Návrh zákona")
 
     press_type = models.SmallIntegerField(choices=PressType.choices, db_index=True)
     title = models.TextField()
