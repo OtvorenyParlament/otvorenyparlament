@@ -9,6 +9,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from djchoices import DjangoChoices, ChoiceItem
 
+from parliament.choices import DocumentCategory
+
 
 class Period(models.Model):
     period_num = models.PositiveIntegerField(verbose_name=_('Period number'))
@@ -177,25 +179,18 @@ class ClubMember(models.Model):
         return True
 
 
+
+
+
 class Press(models.Model):
     """
     Parliament press
     """
-    TYPE_OTHER = 'other'
-    TYPE_INT_AGREEMENT = 'intag'
-    TYPE_PETITION = 'petition'
-    TYPE_INFORMATION = 'information'
-    TYPE_BILL = 'bill'
-    TYPE_REPORT = 'report'
-    TYPES = (
-        (TYPE_OTHER, _('Other type')),
-        (TYPE_INT_AGREEMENT, _('International agreement')),
-        (TYPE_PETITION, _('Petition')),
-        (TYPE_INFORMATION, _('Information')),
-        (TYPE_BILL, _('Bill')),
-        (TYPE_REPORT, _('Report')),
-    )
-    press_type = models.CharField(max_length=24, choices=TYPES, db_index=True)
+
+    class PressType(DocumentCategory):
+        pass
+
+    press_type = models.SmallIntegerField(choices=PressType.choices, db_index=True)
     title = models.TextField()
     press_num = models.CharField(max_length=24, db_index=True)
     date = models.DateField(db_index=True)
@@ -374,17 +369,8 @@ class VotingVote(models.Model):
 
 class Bill(models.Model):
 
-    class Category(DjangoChoices):
-        act_amendment = ChoiceItem(0, "Novela zákona")
-        bill = ChoiceItem(1, "Návrh nového zákona")
-        other = ChoiceItem(2, "Iný typ")
-        petition = ChoiceItem(3, "Petícia")
-        international_treaty = ChoiceItem(4, "Medzinárodná zmluva")
-        report = ChoiceItem(5, "Správa")
-        constitutional_law = ChoiceItem(6, "Ústavný zákon")
-        information = ChoiceItem(7, "Informácia")
-        budget_law = ChoiceItem(8, "Návrh zákona o štátnom rozpočte")
-        presidential_veto = ChoiceItem(9, "Zákon vrátený prezidentom")
+    class Category(DocumentCategory):
+        pass
 
     class State(DjangoChoices):
         evidence = ChoiceItem(0, "Evidencia")
