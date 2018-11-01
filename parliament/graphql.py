@@ -205,6 +205,9 @@ class BillType(DjangoObjectType):
         model = Bill
         interfaces = (Node,)
         connection_class = CountableConnectionBase
+        filter_fields = {
+            'id': ('exact',)
+        }
 
 
 class BillProcessStepType(DjangoObjectType):
@@ -213,6 +216,9 @@ class BillProcessStepType(DjangoObjectType):
         model = BillProcessStep
         interfaces = (Node,)
         connection_class = CountableConnectionBase
+        filter_fields = {
+            'id': ('exact',)
+        }
 
 
 class ParliamentQueries(graphene.ObjectType):
