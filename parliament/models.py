@@ -404,7 +404,7 @@ class Bill(models.Model):
     press = models.ForeignKey(Press, on_delete=models.CASCADE)
     delivered = models.DateField()
     proposer_nonmember = models.CharField(max_length=255, default='')
-    proposers = models.ManyToManyField(Member)
+    proposers = models.ManyToManyField(Member, related_name='proposers')
     state = models.SmallIntegerField(choices=State.choices, null=True, blank=True)
     result = models.SmallIntegerField(choices=Result.choices, null=True, blank=True)
     url = models.URLField()
