@@ -17,6 +17,7 @@ from parliament.filters import (
 from parliament.models import (
     Bill,
     BillProcessStep,
+    BillProposer,
     Club,
     ClubMember,
     Member,
@@ -208,6 +209,18 @@ class BillType(DjangoObjectType):
         connection_class = CountableConnectionBase
 
 
+class BillProposerType(DjangoObjectType):
+
+    class Meta:
+        model = BillProposer
+        interfaces = (Node,)
+        connection_class = CountableConnectionBase
+        filter_fields = {
+            'member': ('exact',),
+            'bill': ('exact',)
+        }
+
+
 class BillProcessStepType(DjangoObjectType):
 
     class Meta:
@@ -267,6 +280,12 @@ class ParliamentQueries(graphene.ObjectType):
         BillType,
         orderBy=graphene.List(of_type=graphene.String),
         filterset_class=BillFilterSet
+    )
+
+    bill_proposer = Node.Field(BillProposerType)
+    all_bill_proposers = OrderedDjangoFilterConnectionField(
+        BillProposerType,
+        orderBy=graphene.List(of_type=graphene.String),
     )
 
     bill_process_step = Node.Field(BillProcessStepType)

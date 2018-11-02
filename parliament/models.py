@@ -179,9 +179,6 @@ class ClubMember(models.Model):
         return True
 
 
-
-
-
 class Press(models.Model):
     """
     Parliament press
@@ -367,12 +364,6 @@ class VotingVote(models.Model):
         return '{} {} {}'.format(self.voting, self.person, self.vote)
 
 
-class BillManager(models.Manager):
-
-    def get_queryset(self):
-        return super().get_queryset().prefetch_related(models.Prefetch('proposers__person')).select_related('press')
-
-
 class Bill(models.Model):
 
     class Category(DocumentCategory):
@@ -416,8 +407,6 @@ class Bill(models.Model):
     result = models.SmallIntegerField(choices=Result.choices, null=True, blank=True)
     url = models.URLField()
 
-    objects = BillManager()
-
     class Meta:
         ordering = ('delivered',)
 
@@ -426,6 +415,7 @@ class BillProposer(models.Model):
 
     bill = models.ForeignKey('Bill', on_delete=models.CASCADE)
     member = models.ForeignKey('Member', on_delete=models.CASCADE)
+
 
 class BillProcessStep(models.Model):
     # TODO: Add more types
