@@ -6,8 +6,24 @@ from django.db.models import Q
 from django.utils import timezone
 import django_filters
 
-from parliament.models import ClubMember, Member, MemberChange, Period, VotingVote
+from parliament.models import Bill, ClubMember, Member, MemberChange, Period, VotingVote
 
+
+class BillFilterSet(django_filters.FilterSet):
+
+    class Meta:
+        model = Bill
+        fields = {
+            'external_id': ('exact',),
+            'category': ('exact',),
+            'press': ('exact',),
+            'delivered': ('exact',),
+            'state': ('exact',),
+            'result': ('exact',),
+            'proposers__person__memberships__period': ('exact',),
+            'proposers__person__memberships__period__period_num': ('exact',),
+            'proposers__person__memberships__club_memberships__club': ('exact',)
+        }
 
 class ClubMemberFilterSet(django_filters.FilterSet):
 

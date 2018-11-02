@@ -9,6 +9,7 @@ from graphene_django.filter import DjangoFilterConnectionField
 
 from graphql_utils import CountableConnectionBase, OrderedDjangoFilterConnectionField
 from parliament.filters import (
+    BillFilterSet,
     ClubMemberFilterSet,
     MemberFilterSet,
     VotingVoteFilterSet
@@ -205,9 +206,6 @@ class BillType(DjangoObjectType):
         model = Bill
         interfaces = (Node,)
         connection_class = CountableConnectionBase
-        filter_fields = {
-            'id': ('exact',)
-        }
 
 
 class BillProcessStepType(DjangoObjectType):
@@ -268,6 +266,7 @@ class ParliamentQueries(graphene.ObjectType):
     all_bills = OrderedDjangoFilterConnectionField(
         BillType,
         orderBy=graphene.List(of_type=graphene.String),
+        filterset_class=BillFilterSet
     )
 
     bill_process_step = Node.Field(BillProcessStepType)
