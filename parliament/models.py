@@ -418,19 +418,18 @@ class BillProposer(models.Model):
 
 
 class BillProcessStep(models.Model):
-    # TODO: Add more types
 
-    class StepTypes(DjangoChoices):
+    class StepType(DjangoChoices):
         registry = ChoiceItem(0, "Podateľňa")
         chair_decision = ChoiceItem(1, "Rozhodnutie predsedu NR SR")
         reading_1 = ChoiceItem(2, "I. čítanie")
-        reading_2 = ChoiceItem(3, "II. čítanie")
-        reading_3 = ChoiceItem(4, "III. čítanie")
-        coordinator_discussion = ChoiceItem(5, "Rokovanie gestorského výboru")
-        committees_discussion = ChoiceItem(6, "Rokovanie výborov")
+        committees_discussion = ChoiceItem(3, "Rokovanie výborov")
+        coordinator_discussion = ChoiceItem(4, "Rokovanie gestorského výboru")
+        reading_2 = ChoiceItem(5, "II. čítanie")
+        reading_3 = ChoiceItem(6, "III. čítanie")
         redaction = ChoiceItem(7, "Redakcia")
 
-    class ResultTypes(DjangoChoices):
+    class ResultType(DjangoChoices):
         chair_decision = ChoiceItem(0, "Zapísané rozhodnutie predsedu NR SR")
         preparing_info = ChoiceItem(1, "Príprava informácie k NZ")
         taken_back = ChoiceItem(2, "NZ vzal navrhovateľ späť")
@@ -453,8 +452,8 @@ class BillProcessStep(models.Model):
     )
     external_id = models.PositiveIntegerField(unique=True)
     bill = models.ForeignKey(Bill, on_delete=models.CASCADE)
-    step_type = models.SmallIntegerField(choices=StepTypes.choices) # body label
-    step_result = models.SmallIntegerField(choices=ResultTypes.choices)
+    step_type = models.SmallIntegerField(choices=StepType.choices) # body label
+    step_result = models.SmallIntegerField(choices=ResultType.choices)
     meeting_session = models.ForeignKey('Session', on_delete=models.CASCADE)
     meeting_resolution = models.PositiveIntegerField(null=True, blank=True)
     meeting_resolution_date = models.DateField(null=True, blank=True)
