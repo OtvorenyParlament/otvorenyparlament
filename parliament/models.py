@@ -479,3 +479,36 @@ class BillProcessStep(models.Model):
 #     title = models.TextField(max_length=512, default='missing title')
 #     url = models.URLField()
 #     file = models.FilePathField(null=True, blank=True)
+
+
+class DebateAppearance(models.Model):
+
+    class AppearanceType(DjangoChoices):
+        undefined = ChoiceItem(0, "-")
+        additional_question = ChoiceItem(1, "Doplňujúca otázka / reakcia zadávajúceho")
+        interpelation = ChoiceItem(2, "Prednesenie interpelácie")
+        question = ChoiceItem(3, "Prednesenie otázky")
+        stating_point = ChoiceItem(4, "Uvádzajúci uvádza bod")
+        chair = ChoiceItem(5, "Vstup predsedajúceho")
+        appearance = ChoiceItem(6, "Vystúpenie")
+        appearance_fact = ChoiceItem(7, "Vystúpenie s faktickou poznámkou")
+        appearance_procedural = ChoiceItem(8, "Vystúpenie s procedurálnym návrhom")
+        appearance_correspondent = ChoiceItem(9, "Vystúpenie spoločného spravodajcu")
+        debate_appearance = ChoiceItem(10, "Vystúpenie v rozprave")
+        answer = ChoiceItem(11, "Zodpovedanie otázky")
+
+    external_id = models.PositiveIntegerField(unique=True)
+    session = models.ForeignKey('Session', on_delete=models.CASCADE)
+    start = models.DateTimeField(db_index=True)
+    end = models.DateTimeField()
+    debater = models.ForeignKey('person.Person', on_delete=models.CASCADE, null=True, blank=True)
+    appearance_type = models.SmallIntegerField(choices=AppearanceType.choices)
+    press_num = models.ManyToManyField('Press', blank=True)
+    video_url = models.URLField()
+    appearance_addition = models.CharField(max_length=128, default='', blank=True)
+    debater_ext = models.CharField(max_length=128, default='', blank=True)
+    debater_role = models.TextField(default='', blank=True)
+    text = models.TextField(default='', blank=True)
+
+    class Meta:
+        ordering = ('external_id',)
