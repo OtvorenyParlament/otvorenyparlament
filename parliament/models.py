@@ -323,7 +323,7 @@ class VotingVoteManager(models.Manager):
 
     def get_queryset(self):
         return super().get_queryset().select_related(
-            'person', 'voting', 'voting__session', 'voting__press')
+            'voter', 'voting', 'voting__session', 'voting__press')
 
 
 class VotingVote(models.Model):
@@ -348,21 +348,20 @@ class VotingVote(models.Model):
 
     voting = models.ForeignKey(
         Voting, on_delete=models.CASCADE, related_name='votes')
-    person = models.ForeignKey(
-        'person.Person',
+    voter = models.ForeignKey(
+        'Member',
         on_delete=models.CASCADE,
-        related_name='votes',
-        null=True,
-        blank=True)
+        related_name='votes'
+    )
     vote = models.CharField(max_length=1, choices=OPTIONS)
     objects = VotingVoteManager()
 
     class Meta:
         ordering = ('-voting__session__session_num', '-voting__voting_num',)
-        unique_together = (('voting', 'person'),)
+        unique_together = (('voting', 'voter'),)
 
     def __str__(self):
-        return '{} {} {}'.format(self.voting, self.person, self.vote)
+        return '{} {} {}'.format(self.voting, self.voter, self.vote)
 
 
 class Bill(models.Model):
