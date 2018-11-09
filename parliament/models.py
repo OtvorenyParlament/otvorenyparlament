@@ -525,9 +525,48 @@ class Interpellation(models.Model):
     external_id = models.PositiveIntegerField(unique=True)
     period = models.ForeignKey('Period', on_delete=models.CASCADE)
     date = models.DateField()
-    asked_by = models.ForeignKey('person.Person', on_delete=models.CASCADE, null=True, blank=True)
+    asked_by = models.ForeignKey('Member', on_delete=models.CASCADE, null=True, blank=True)
     status = models.SmallIntegerField(choices=StatusType.choices)
     responded_by = models.CharField(max_length=64, default='', blank=True)
     recipients = ArrayField(models.CharField(max_length=64))
     url = models.URLField()
     description = models.TextField()
+
+
+class Amendment(models.Model):
+
+    external_id = models.PositiveIntegerField(unique=True)
+    session = models.ForeignKey('Session', on_delete=models.CASCADE)
+    press = models.ForeignKey('Press', on_delete=models.CASCADE)
+    date = models.DateField()
+    submitter = models.ForeignKey('Member', on_delete=models.CASCADE)
+    voting = models.ForeignKey('Voting', on_delete=models.CASCADE, null=True, blank=True)
+    url = models.URLField()
+    signed_members = models.ManyToManyField(
+        'Member',
+        related_name='signed_members',
+        through='AmendmentSignedMember',
+        blank=True)
+    other_submitters = models.ManyToManyField(
+        'Member',
+        related_name='other_submitters',
+        through='AmendmentSubmitter',
+        blank=True)
+
+
+class AmendmentSignedMember(models.Model):
+
+    amendment = models.ForeignKey('Amendment', on_delete=models.CASCADE)
+    member = models.ForeignKey('Member', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (('amendment', 'member'),)
+
+
+class AmendmentSubmitter(models.Model):
+
+    amendment = models.ForeignKey('Amendment', on_delete=models.CASCADE)
+    member = models.ForeignKey('Member', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (('amendment', 'member'),)
