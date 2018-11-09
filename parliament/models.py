@@ -422,7 +422,7 @@ class BillProcessStep(models.Model):
 
     class StepType(DjangoChoices):
         registry = ChoiceItem(0, "Podateľňa")
-        chair_decision = ChoiceItem(1, "Rozhodnutie predsedu NR SR")
+        speaker_resolution = ChoiceItem(1, "Rozhodnutie predsedu NR SR")
         reading_1 = ChoiceItem(2, "I. čítanie")
         committees_discussion = ChoiceItem(3, "Rokovanie výborov")
         coordinator_discussion = ChoiceItem(4, "Rokovanie gestorského výboru")
@@ -431,7 +431,7 @@ class BillProcessStep(models.Model):
         redaction = ChoiceItem(7, "Redakcia")
 
     class ResultType(DjangoChoices):
-        chair_decision = ChoiceItem(0, "Zapísané rozhodnutie predsedu NR SR")
+        speaker_resolution = ChoiceItem(0, "Zapísané rozhodnutie predsedu NR SR")
         preparing_info = ChoiceItem(1, "Príprava informácie k NZ")
         taken_back = ChoiceItem(2, "NZ vzal navrhovateľ späť")
         wont_continue = ChoiceItem(3, "NR SR nebude pokračovať v rokovaní o návrhu zákona")
@@ -490,7 +490,7 @@ class DebateAppearance(models.Model):
         interpellation = ChoiceItem(2, "Prednesenie interpelácie")
         question = ChoiceItem(3, "Prednesenie otázky")
         stating_point = ChoiceItem(4, "Uvádzajúci uvádza bod")
-        chair = ChoiceItem(5, "Vstup predsedajúceho")
+        speaker = ChoiceItem(5, "Vstup predsedajúceho")
         appearance = ChoiceItem(6, "Vystúpenie")
         appearance_fact = ChoiceItem(7, "Vystúpenie s faktickou poznámkou")
         appearance_procedural = ChoiceItem(8, "Vystúpenie s procedurálnym návrhom")
