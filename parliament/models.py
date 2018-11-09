@@ -4,6 +4,7 @@ Parliament Models
 
 from datetime import datetime
 
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -486,7 +487,7 @@ class DebateAppearance(models.Model):
     class AppearanceType(DjangoChoices):
         undefined = ChoiceItem(0, "-")
         additional_question = ChoiceItem(1, "Doplňujúca otázka / reakcia zadávajúceho")
-        interpelation = ChoiceItem(2, "Prednesenie interpelácie")
+        interpellation = ChoiceItem(2, "Prednesenie interpelácie")
         question = ChoiceItem(3, "Prednesenie otázky")
         stating_point = ChoiceItem(4, "Uvádzajúci uvádza bod")
         chair = ChoiceItem(5, "Vstup predsedajúceho")
@@ -512,3 +513,21 @@ class DebateAppearance(models.Model):
 
     class Meta:
         ordering = ('external_id',)
+
+
+class Interpellation(models.Model):
+
+    class StatusType(DjangoChoices):
+        awaiting_response = ChoiceItem(0, "Príjem odpovede na interpeláciu")
+        debate = ChoiceItem(1, "Rokovanie o interpelácii")
+        closed = ChoiceItem(2, "Uzavretá odpoveď na interpeláciu")
+
+    external_id = models.PositiveIntegerField(unique=True)
+    period = models.ForeignKey('Period', on_delete=models.CASCADE)
+    date = models.DateField()
+    asked_by = models.ForeignKey('person.Person', on_delete=models.CASCADE, null=True, blank=True)
+    status = models.SmallIntegerField(choices=StatusType.choices)
+    responded_by = models.CharField(max_length=64, default='', blank=True)
+    recipients = ArrayField(models.CharField(max_length=64))
+    url = models.URLField()
+    description = models.TextField()
