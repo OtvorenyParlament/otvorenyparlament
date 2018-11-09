@@ -502,7 +502,7 @@ class DebateAppearance(models.Model):
     session = models.ForeignKey('Session', on_delete=models.CASCADE)
     start = models.DateTimeField(db_index=True)
     end = models.DateTimeField()
-    debater = models.ForeignKey('person.Person', on_delete=models.CASCADE, null=True, blank=True)
+    debater = models.ForeignKey('Member', on_delete=models.CASCADE, null=True, blank=True)
     appearance_type = models.SmallIntegerField(choices=AppearanceType.choices)
     press_num = models.ManyToManyField('Press', blank=True)
     video_url = models.URLField()
