@@ -526,6 +526,12 @@ class Interpellation(models.Model):
     date = models.DateField()
     asked_by = models.ForeignKey('Member', on_delete=models.CASCADE, null=True, blank=True)
     status = models.SmallIntegerField(choices=StatusType.choices)
+    interpellation_session = models.ForeignKey(
+        'Session', on_delete=models.CASCADE, related_name='interpellations', null=True, blank=True)
+    response_session = models.ForeignKey(
+        'Session', on_delete=models.CASCADE,
+        related_name='interpellation_responses', null=True, blank=True)
+    press = models.ForeignKey('Press', on_delete=models.CASCADE, null=True, blank=True)
     responded_by = models.CharField(max_length=64, default='', blank=True)
     recipients = ArrayField(models.CharField(max_length=64))
     url = models.URLField()
