@@ -15,6 +15,9 @@ from parliament.filters import (
     VotingVoteFilterSet
 )
 from parliament.models import (
+    Amendment,
+    AmendmentSignedMember,
+    AmendmentSubmitter,
     Bill,
     BillProcessStep,
     BillProposer,
@@ -233,6 +236,45 @@ class BillProcessStepType(DjangoObjectType):
         }
 
 
+class AmendmentSignedMemberType(DjangoObjectType):
+
+    class Meta:
+        model = AmendmentSignedMember
+        interfaces = (Node,)
+        connection_class = CountableConnectionBase
+        filter_fields = {
+            'id': ('exact',)
+        }
+
+
+class AmendmentSubmitterType(DjangoObjectType):
+
+    class Meta:
+        model = AmendmentSubmitter
+        interfaces = (Node,)
+        connection_class = CountableConnectionBase
+        filter_fields = {
+            'id': ('exact',)
+        }
+
+
+class AmendmentType(DjangoObjectType):
+
+    class Meta:
+        model = Amendment
+        interfaces = (Node,)
+        connection_class = CountableConnectionBase
+        filter_fields = {
+            'id': ('exact',),
+            'session': ('exact',),
+            'session__period': ('exact',),
+            'press': ('exact',),
+            'voting': ('exact',),
+            'submitter': ('exact',),
+            'submitter__person': ('exact',),
+        }
+
+
 class ParliamentQueries(graphene.ObjectType):
 
     club_member = Node.Field(ClubMemberType)
@@ -293,4 +335,9 @@ class ParliamentQueries(graphene.ObjectType):
     all_bill_process_steps = OrderedDjangoFilterConnectionField(
         BillProcessStepType,
         orderBy=graphene.List(of_type=graphene.String),
+    )
+
+    amendment = Node.Field(AmendmentType)
+    all_amendments = OrderedDjangoFilterConnectionField(
+        AmendmentType
     )

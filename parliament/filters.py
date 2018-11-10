@@ -112,6 +112,7 @@ class VotingVoteFilterSet(django_filters.FilterSet):
         fields = {
             'id': ('exact',),
             'voting__voting_num': ('exact',),
+            'voting__session': ('exact',),
             'voting__session__session_num': ('exact',),
             'voting__session__period__period_num': ('exact',),
             'voter': ('exact',),
