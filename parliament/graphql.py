@@ -138,6 +138,7 @@ class VotingChartSeriesType(graphene.ObjectType):
 class VotingType(DjangoObjectType):
 
     chart_series = graphene.Field(VotingChartSeriesType)
+    result_display = graphene.String()
 
     class Meta:
         model = Voting

@@ -32,6 +32,7 @@ class ClubManaber(models.Manager):
     def get_queryset(self):
         return super().get_queryset().select_related('period')
 
+
 class Club(models.Model):
     period = models.ForeignKey(Period, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
@@ -304,7 +305,10 @@ class Voting(models.Model):
     class Meta:
         ordering = ('-voting_num',)
 
-    # @property
+    @property
+    def result_display(self):
+        return self.get_result_display()
+
     def chart_series(self):
         display = {
             x[0]: x[1]
@@ -362,7 +366,6 @@ class VotingVote(models.Model):
 
     def __str__(self):
         return '{} {} {}'.format(self.voting, self.voter, self.vote)
-
 
 class Bill(models.Model):
 
