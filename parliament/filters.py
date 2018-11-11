@@ -17,13 +17,17 @@ class BillFilterSet(django_filters.FilterSet):
             'external_id': ('exact',),
             'category': ('exact',),
             'press': ('exact',),
+            'press__period': ('exact',),
+            'press__period__period_num': ('exact',),
             'delivered': ('exact',),
             'state': ('exact',),
             'result': ('exact',),
-            'proposers__person__memberships__period': ('exact',),
-            'proposers__person__memberships__period__period_num': ('exact',),
-            'proposers__person__memberships__club_memberships__club': ('exact',)
+            'proposers__club_memberships__club': ('exact',)
         }
+
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        return queryset.distinct()
 
 class ClubMemberFilterSet(django_filters.FilterSet):
 
