@@ -419,6 +419,9 @@ class BillProposer(models.Model):
     bill = models.ForeignKey('Bill', on_delete=models.CASCADE)
     member = models.ForeignKey('Member', on_delete=models.CASCADE)
 
+    class Meta:
+        unique_together = (('bill', 'member'),)
+
 
 class BillProcessStep(models.Model):
 
