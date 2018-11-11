@@ -367,6 +367,13 @@ class VotingVote(models.Model):
     def __str__(self):
         return '{} {} {}'.format(self.voting, self.voter, self.vote)
 
+
+class BillManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().select_related('press')
+
+
 class Bill(models.Model):
 
     class Category(DocumentCategory):
@@ -409,6 +416,8 @@ class Bill(models.Model):
     state = models.SmallIntegerField(choices=State.choices, null=True, blank=True)
     result = models.SmallIntegerField(choices=Result.choices, null=True, blank=True)
     url = models.URLField()
+
+    objects = BillManager()
 
     class Meta:
         ordering = ('delivered',)

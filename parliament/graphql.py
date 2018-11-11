@@ -205,14 +205,6 @@ class VotingVoteType(DjangoObjectType):
         return CountableConnection
 
 
-class BillType(DjangoObjectType):
-
-    class Meta:
-        model = Bill
-        interfaces = (Node,)
-        connection_class = CountableConnectionBase
-
-
 class BillProposerType(DjangoObjectType):
 
     class Meta:
@@ -223,6 +215,18 @@ class BillProposerType(DjangoObjectType):
             'member': ('exact',),
             'bill': ('exact',)
         }
+
+
+class BillType(DjangoObjectType):
+
+    class Meta:
+        model = Bill
+        interfaces = (Node,)
+        connection_class = CountableConnectionBase
+        only_fields = [
+            'external_id', 'category', 'press', 'delivered',
+            'proposer_nonmember', 'proposers', 'state', 'result', 'url'
+        ]
 
 
 class BillProcessStepType(DjangoObjectType):
