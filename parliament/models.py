@@ -35,6 +35,7 @@ class ClubManaber(models.Manager):
 
 class Club(models.Model):
     period = models.ForeignKey(Period, on_delete=models.CASCADE)
+    coalition = models.BooleanField(default=False)
     name = models.CharField(max_length=255)
     email = models.EmailField(null=True, blank=True)
     external_id = models.IntegerField(unique=True, null=True)
@@ -181,6 +182,12 @@ class ClubMember(models.Model):
         return True
 
 
+class PressManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('votings')
+
+
 class Press(models.Model):
     """
     Parliament press
@@ -195,6 +202,8 @@ class Press(models.Model):
     date = models.DateField(db_index=True)
     period = models.ForeignKey(Period, on_delete=models.CASCADE, related_name='presses')
     url = models.URLField()
+
+    objects = PressManager()
 
     class Meta:
         verbose_name = _('press')
