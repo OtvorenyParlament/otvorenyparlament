@@ -38,8 +38,8 @@ class Club(models.Model):
     coalition = models.BooleanField(default=False)
     name = models.CharField(max_length=255)
     email = models.EmailField(null=True, blank=True)
-    external_id = models.IntegerField(unique=True, null=True)
-    url = models.URLField(null=True)
+    external_id = models.IntegerField(unique=True, null=True, blank=True)
+    url = models.URLField(null=True, blank=True)
 
     objects = ClubManaber()
 

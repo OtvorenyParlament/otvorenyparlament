@@ -67,7 +67,7 @@ class ClubType(DjangoObjectType):
             'id': ('exact',),
             'period__period_num': ('exact',)
         }
-        only_fields = ['name', 'period', 'members', 'current_member_count']
+        only_fields = ['name', 'period', 'members', 'current_member_count', 'coalition']
 
 
 class PeriodType(DjangoObjectType):

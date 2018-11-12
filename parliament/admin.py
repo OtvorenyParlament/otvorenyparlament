@@ -22,8 +22,7 @@ class BillStepProcessAdmin(admin.ModelAdmin):
 @admin.register(Club)
 class ClubAdmin(admin.ModelAdmin):
 
-    pass
-
+    list_display = ('name', 'coalition')
 
 @admin.register(ClubMember)
 class ClubMemberAdmin(admin.ModelAdmin):
