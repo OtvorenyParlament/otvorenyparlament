@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # otvorenyparlament apps
     'geo',
     'parliament',
+    'parliament_stats',
     'person'
 ]
 
