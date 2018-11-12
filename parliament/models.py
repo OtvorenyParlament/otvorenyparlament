@@ -568,7 +568,6 @@ class Amendment(models.Model):
     session = models.ForeignKey('Session', on_delete=models.CASCADE)
     press = models.ForeignKey('Press', on_delete=models.CASCADE)
     date = models.DateField()
-    submitter = models.ForeignKey('Member', on_delete=models.CASCADE)
     voting = models.ForeignKey('Voting', on_delete=models.CASCADE, null=True, blank=True)
     url = models.URLField()
     title = models.TextField()
@@ -577,9 +576,9 @@ class Amendment(models.Model):
         related_name='signed_members',
         through='AmendmentSignedMember',
         blank=True)
-    other_submitters = models.ManyToManyField(
+    submitters = models.ManyToManyField(
         'Member',
-        related_name='other_submitters',
+        related_name='submitters',
         through='AmendmentSubmitter',
         blank=True)
 
@@ -597,6 +596,7 @@ class AmendmentSubmitter(models.Model):
 
     amendment = models.ForeignKey('Amendment', on_delete=models.CASCADE)
     member = models.ForeignKey('Member', on_delete=models.CASCADE)
+    main = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = (('amendment', 'member'),)
+        unique_together = (('amendment', 'member'), ('amendment', 'main'))
