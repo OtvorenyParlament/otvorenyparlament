@@ -11,7 +11,8 @@ from parliament.models import (Bill, BillProcessStep, Club, ClubMember, Member, 
 @admin.register(Bill)
 class BillAdmin(admin.ModelAdmin):
 
-    pass
+    list_display = ('external_id',)
+    list_filter = ('proposers__club_memberships__club',)
 
 @admin.register(BillProcessStep)
 class BillStepProcessAdmin(admin.ModelAdmin):
