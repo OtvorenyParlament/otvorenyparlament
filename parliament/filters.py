@@ -41,6 +41,10 @@ class ClubMemberFilterSet(django_filters.FilterSet):
         )
         return queryset
 
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        return queryset.distinct()
+
     class Meta:
         model = ClubMember
         fields = {

@@ -274,8 +274,6 @@ class AmendmentType(DjangoObjectType):
             'session__period': ('exact',),
             'press': ('exact',),
             'voting': ('exact',),
-            'submitter': ('exact',),
-            'submitter__person': ('exact',),
         }
 
 
