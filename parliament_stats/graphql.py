@@ -44,7 +44,7 @@ class ParliamentStatsQueries(ObjectType):
 
         fields_to_aggregate = [
             to_snake_case(x.name.value) for x in info.field_asts[0].selection_set.selections
-            if x.name.value not in ['club', 'date']
+            if x.name.value and x.name.value not in ['club', 'date', '__typename']
         ]
 
         sums = {x: Sum(x) for x in fields_to_aggregate}
