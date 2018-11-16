@@ -29,6 +29,7 @@ class BillFilterSet(django_filters.FilterSet):
         queryset = super().filter_queryset(queryset)
         return queryset.distinct()
 
+
 class ClubMemberFilterSet(django_filters.FilterSet):
 
     is_current_member = django_filters.DateFilter(

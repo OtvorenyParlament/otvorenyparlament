@@ -7,7 +7,8 @@ from django.db import models
 
 class ClubStats(models.Model):
 
-    club = models.ForeignKey('parliament.Club', on_delete=models.CASCADE)
+    club = models.ForeignKey(
+        'parliament.Club', on_delete=models.CASCADE, related_name='club_stats')
     date = models.DateField()
     # bills
     bill_count = models.PositiveSmallIntegerField()
