@@ -562,6 +562,12 @@ class Interpellation(models.Model):
     description = models.TextField()
 
 
+class AmendmentManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().select_related('press')
+
+
 class Amendment(models.Model):
 
     external_id = models.PositiveIntegerField(unique=True)
@@ -581,6 +587,8 @@ class Amendment(models.Model):
         related_name='submitters',
         through='AmendmentSubmitter',
         blank=True)
+
+    objects = AmendmentManager()
 
 
 class AmendmentSignedMember(models.Model):

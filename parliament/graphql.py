@@ -9,6 +9,7 @@ from graphene_django.filter import DjangoFilterConnectionField
 
 from graphql_utils import CountableConnectionBase, OrderedDjangoFilterConnectionField
 from parliament.filters import (
+    AmendmentFilterSet,
     BillFilterSet,
     ClubMemberFilterSet,
     MemberFilterSet,
@@ -268,13 +269,6 @@ class AmendmentType(DjangoObjectType):
         model = Amendment
         interfaces = (Node,)
         connection_class = CountableConnectionBase
-        filter_fields = {
-            'id': ('exact',),
-            'session': ('exact',),
-            'session__period': ('exact',),
-            'press': ('exact',),
-            'voting': ('exact',),
-        }
 
 
 class ParliamentQueries(graphene.ObjectType):
@@ -341,5 +335,7 @@ class ParliamentQueries(graphene.ObjectType):
 
     amendment = Node.Field(AmendmentType)
     all_amendments = OrderedDjangoFilterConnectionField(
-        AmendmentType
+        AmendmentType,
+        orderBy=graphene.List(of_type=graphene.String),
+        filterset_class=AmendmentFilterSet
     )

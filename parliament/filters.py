@@ -6,7 +6,22 @@ from django.db.models import Q
 from django.utils import timezone
 import django_filters
 
-from parliament.models import Bill, ClubMember, Member, MemberChange, Period, VotingVote
+from parliament.models import Amendment, Bill, ClubMember, Member, MemberChange, Period, VotingVote
+
+
+class AmendmentFilterSet(django_filters.FilterSet):
+
+    class Meta:
+        model = Amendment
+        fields = {
+            'external_id': ('exact',),
+            'session': ('exact',),
+            'session__period': ('exact',),
+            'press': ('exact',),
+            'voting': ('exact',),
+            'date': ('exact',),
+            'submitters__club_memberships__club': ('exact',)
+        }
 
 
 class BillFilterSet(django_filters.FilterSet):
