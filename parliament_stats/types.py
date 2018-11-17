@@ -21,6 +21,7 @@ class ColumnClubStatsType(ObjectType):
                                     model=None,
                                     only_fields=(),
                                     exclude_fields=(),
+                                    group_fields=(),
                                     **options
     ):
 
@@ -28,6 +29,17 @@ class ColumnClubStatsType(ObjectType):
             _meta = ObjectTypeOptions(cls)
 
         registry = get_global_registry()
+
+        # TODO(Jozef): add group_fields option so each respective vote type is not
+        # separate field but all will be returned in list with labels in another
+        # list
+        # if group_fields:
+        #     grouped = {}
+        #     for group in group_fields:
+        #         grouped[group] = {}
+        #         to_generate = []
+        #         for field in model._meta.get_fields():
+
         django_fields = yank_fields_from_attrs(
             construct_fields(model, registry, only_fields, exclude_fields), _as=Field
         )

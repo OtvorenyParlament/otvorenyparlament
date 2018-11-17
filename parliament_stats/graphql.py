@@ -19,6 +19,8 @@ class ClubStatsType(ColumnClubStatsType):
     class Meta:
         model = ClubStats
         exclude_fields = ['id', 'date']
+        # TODO(Jozef): check TODO in types.py
+        # group_fields = ['votingCoalition', 'votingOpposition']
 
 
 class ParliamentStatsQueries(ObjectType):
