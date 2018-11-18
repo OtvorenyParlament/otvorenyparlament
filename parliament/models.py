@@ -576,7 +576,6 @@ class Amendment(models.Model):
     date = models.DateField()
     voting = models.ForeignKey('Voting', on_delete=models.CASCADE, null=True, blank=True)
     url = models.URLField()
-    title = models.TextField()
     signed_members = models.ManyToManyField(
         'Member',
         related_name='signed_members',
