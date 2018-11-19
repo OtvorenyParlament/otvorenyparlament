@@ -61,3 +61,20 @@ class ClubStats(models.Model):
         unique_together = (('club', 'date',))
         verbose_name = 'Club Stats'
         verbose_name_plural = verbose_name
+
+
+class MemberStats(models.Model):
+
+    member = models.ForeignKey(
+        'parliament.Member', on_delete=models.CASCADE, related_name='member_stats')
+    date = models.DateField()
+    bill_count = models.PositiveSmallIntegerField()
+    amendment_count = models.PositiveSmallIntegerField()
+    interpellation_count = models.PositiveSmallIntegerField()
+    debate_count = models.PositiveSmallIntegerField()
+    debate_seconds = models.PositiveSmallIntegerField()
+
+    class Meta:
+        unique_together = (('member', 'date',))
+        verbose_name = 'MP Stats'
+        verbose_name_plural = verbose_name

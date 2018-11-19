@@ -9,7 +9,7 @@ from graphene.types.objecttype import ObjectType, ObjectTypeOptions
 from graphene.types.utils import yank_fields_from_attrs
 from graphene_django.types import construct_fields, get_global_registry
 
-class ColumnClubStatsType(ObjectType):
+class ColumnStatsType(ObjectType):
 
     @classmethod
     def __init_subclass_with_meta__(

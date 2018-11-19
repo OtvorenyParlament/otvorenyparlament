@@ -109,7 +109,8 @@ class DebateAppearanceType(DjangoObjectType):
         model = DebateAppearance
         connection_class = CountableConnectionBase
         filter_fields = {
-            'id': ('exact',)
+            'id': ('exact',),
+            'debater': ('exact',),
         }
 
 
