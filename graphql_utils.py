@@ -26,20 +26,19 @@ class OrderedDjangoFilterConnectionField(DjangoFilterConnectionField):
         if club:
             id_tuple = from_global_id(club)
             if id_tuple[0] == 'ClubType':
+                dfilter_key = 'date'
                 if resolver.args[0] == 'all_amendments':
                     filter_key = 'submitters'
                 elif resolver.args[0] == 'all_interpellations':
-                    filter_key='asked_by'
+                    filter_key = 'asked_by'
+                elif resolver.args[0] == 'all_debate_appearances':
+                    filter_key = 'debater'
+                    dfilter_key = 'start'
                 qs = qs.filter(
-                    # Q(submitters__club_memberships__club__id=id_tuple[1]) &
-                    # Q(**{'submitters__club_memberships__club__id': id_tuple[1]}) &
                     Q(**{'{}__club_memberships__club__id'.format(filter_key): id_tuple[1]}) &
-                    # Q(submitters__club_memberships__start__lte=F('date')) &
-                    Q(**{'{}__club_memberships__start__lte'.format(filter_key): F('date')}) &
+                    Q(**{'{}__club_memberships__start__lte'.format(filter_key): F(dfilter_key)}) &
                     (
-                        # Q(submitters__club_memberships__end__gte=F('date')) |
-                        # Q(submitters__club_memberships__end__isnull=True)
-                        Q(**{'{}__club_memberships__end__gte'.format(filter_key): F('date')}) |
+                        Q(**{'{}__club_memberships__end__gte'.format(filter_key): F(dfilter_key)}) |
                         Q(**{'{}__club_memberships__end__isnull'.format(filter_key): True})
                     )
                 ).distinct()

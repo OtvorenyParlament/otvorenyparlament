@@ -24,6 +24,7 @@ from parliament.models import (
     BillProposer,
     Club,
     ClubMember,
+    DebateAppearance,
     Interpellation,
     Member,
     MemberActive,
@@ -38,6 +39,9 @@ from parliament.models import (
     VotingVote,
 )
 
+
+# TODO(Jozef): Add overridden DjangoObjectType implicitly containing
+# interfaces = (Node,) and CountableConnectionBase as connection_class
 
 class PartyType(DjangoObjectType):
 
@@ -95,6 +99,17 @@ class PressType(DjangoObjectType):
             'press_num': ('exact',),
             'press_type': ('exact',),
             'period__period_num': ('exact',)
+        }
+
+
+class DebateAppearanceType(DjangoObjectType):
+
+    class Meta:
+        interfaces = (Node,)
+        model = DebateAppearance
+        connection_class = CountableConnectionBase
+        filter_fields = {
+            'id': ('exact',)
         }
 
 
@@ -319,6 +334,13 @@ class ParliamentQueries(graphene.ObjectType):
         VotingVoteType,
         orderBy=graphene.List(of_type=graphene.String),
         filterset_class=VotingVoteFilterSet)
+
+    debate_appearance = Node.Field(DebateAppearanceType)
+    all_debate_appearances = OrderedDjangoFilterConnectionField(
+        DebateAppearanceType,
+        orderBy=graphene.List(of_type=graphene.String),
+        club=graphene.ID()
+    )
 
     interpellation = Node.Field(InterpellationType)
     all_interpellations = OrderedDjangoFilterConnectionField(
