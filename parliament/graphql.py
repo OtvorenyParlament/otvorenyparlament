@@ -24,6 +24,7 @@ from parliament.models import (
     BillProposer,
     Club,
     ClubMember,
+    Interpellation,
     Member,
     MemberActive,
     Party,
@@ -85,6 +86,7 @@ class PeriodType(DjangoObjectType):
 
 
 class PressType(DjangoObjectType):
+
     class Meta:
         model = Press
         interfaces = (Node,)
@@ -93,6 +95,17 @@ class PressType(DjangoObjectType):
             'press_num': ('exact',),
             'press_type': ('exact',),
             'period__period_num': ('exact',)
+        }
+
+
+class InterpellationType(DjangoObjectType):
+
+    class Meta:
+        interfaces = (Node,)
+        model = Interpellation
+        connection_class = CountableConnectionBase
+        filter_fields = {
+            'id': ('exact',)
         }
 
 
@@ -307,6 +320,13 @@ class ParliamentQueries(graphene.ObjectType):
         orderBy=graphene.List(of_type=graphene.String),
         filterset_class=VotingVoteFilterSet)
 
+    interpellation = Node.Field(InterpellationType)
+    all_interpellations = OrderedDjangoFilterConnectionField(
+        InterpellationType,
+        orderBy=graphene.List(of_type=graphene.String),
+        club=graphene.ID()
+    )
+
     member = Node.Field(MemberType)
     all_members = OrderedDjangoFilterConnectionField(
         MemberType,
@@ -337,5 +357,6 @@ class ParliamentQueries(graphene.ObjectType):
     all_amendments = OrderedDjangoFilterConnectionField(
         AmendmentType,
         orderBy=graphene.List(of_type=graphene.String),
-        filterset_class=AmendmentFilterSet
+        filterset_class=AmendmentFilterSet,
+        club=graphene.ID()
     )

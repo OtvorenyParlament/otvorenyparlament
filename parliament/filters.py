@@ -2,14 +2,20 @@
 Parliament filters
 """
 
-from django.db.models import Q
+from django.db.models import F, Q
 from django.utils import timezone
 import django_filters
+from django_filters.conf import settings as filter_settings
+from django_filters.constants import EMPTY_VALUES
 
-from parliament.models import Amendment, Bill, ClubMember, Member, MemberChange, Period, VotingVote
+from graphql_relay.node.node import from_global_id
+
+from parliament.models import Amendment, AmendmentSubmitter, Bill, Club, ClubMember, Member, MemberChange, Period, VotingVote
 
 
 class AmendmentFilterSet(django_filters.FilterSet):
+
+    # club = django_filters.CharFilter(method='filter_club')
 
     class Meta:
         model = Amendment
@@ -20,8 +26,21 @@ class AmendmentFilterSet(django_filters.FilterSet):
             'press': ('exact',),
             'voting': ('exact',),
             'date': ('exact',),
-            'submitters__club_memberships__club': ('exact',)
         }
+
+    # FIXME: see FIXME in graphql_utils connection_resolver
+    # def filter_club(self, queryset, name, value):
+    #     id_tuple = from_global_id(value)
+    #     queryset = queryset.filter(
+    #         Q(submitters__club_memberships__club__id=id_tuple[1]) &
+    #         Q(submitters__club_memberships__start__lte=F('date')) &
+    #         (
+    #             Q(submitters__club_memberships__end__gte=F('date')) |
+    #             Q(submitters__club_memberships__end__isnull=True)
+    #         )
+    #     ).distinct()
+
+    #     return queryset
 
 
 class BillFilterSet(django_filters.FilterSet):

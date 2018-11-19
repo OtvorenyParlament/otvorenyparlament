@@ -2,8 +2,10 @@
 GraphQL Common utils
 """
 
+from django.db.models import F, Q
 import graphene
 from graphene_django.filter import DjangoFilterConnectionField
+from graphql_relay.node.node import from_global_id
 
 
 class OrderedDjangoFilterConnectionField(DjangoFilterConnectionField):
@@ -17,6 +19,30 @@ class OrderedDjangoFilterConnectionField(DjangoFilterConnectionField):
         qs = default_manager.get_queryset() if hasattr(
             default_manager, 'get_queryset') else default_manager
         qs = filterset_class(data=filter_kwargs, queryset=qs).qs
+        # FIXME: the club stuff is a workaround of django-filter generating
+        # duplicated INNER JOINS while filtering on m2m. Another option is to just
+        # generate CharFilter with custom method and force it to be a graphene.ID
+        club = args.get('club', None)
+        if club:
+            id_tuple = from_global_id(club)
+            if id_tuple[0] == 'ClubType':
+                if resolver.args[0] == 'all_amendments':
+                    filter_key = 'submitters'
+                elif resolver.args[0] == 'all_interpellations':
+                    filter_key='asked_by'
+                qs = qs.filter(
+                    # Q(submitters__club_memberships__club__id=id_tuple[1]) &
+                    # Q(**{'submitters__club_memberships__club__id': id_tuple[1]}) &
+                    Q(**{'{}__club_memberships__club__id'.format(filter_key): id_tuple[1]}) &
+                    # Q(submitters__club_memberships__start__lte=F('date')) &
+                    Q(**{'{}__club_memberships__start__lte'.format(filter_key): F('date')}) &
+                    (
+                        # Q(submitters__club_memberships__end__gte=F('date')) |
+                        # Q(submitters__club_memberships__end__isnull=True)
+                        Q(**{'{}__club_memberships__end__gte'.format(filter_key): F('date')}) |
+                        Q(**{'{}__club_memberships__end__isnull'.format(filter_key): True})
+                    )
+                ).distinct()
         order = args.get('orderBy', None)
         if order:
             qs = qs.order_by(*order)
