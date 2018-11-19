@@ -23,15 +23,18 @@ class OrderedDjangoFilterConnectionField(DjangoFilterConnectionField):
         # duplicated INNER JOINS while filtering on m2m. Another option is to just
         # generate CharFilter with custom method and force it to be a graphene.ID
         club = args.get('club', None)
-        if club:
+        customized_club_filters = [
+            'all_amendments', 'all_interpellations', 'all_debate_appearances']
+        current_resolver = resolver.args[0]
+        if club and current_resolver in customized_club_filters:
             id_tuple = from_global_id(club)
             if id_tuple[0] == 'ClubType':
                 dfilter_key = 'date'
-                if resolver.args[0] == 'all_amendments':
+                if current_resolver == 'all_amendments':
                     filter_key = 'submitters'
-                elif resolver.args[0] == 'all_interpellations':
+                elif current_resolver == 'all_interpellations':
                     filter_key = 'asked_by'
-                elif resolver.args[0] == 'all_debate_appearances':
+                elif current_resolver == 'all_debate_appearances':
                     filter_key = 'debater'
                     dfilter_key = 'start'
                 qs = qs.filter(
