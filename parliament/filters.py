@@ -26,6 +26,7 @@ class AmendmentFilterSet(django_filters.FilterSet):
             'press': ('exact',),
             'voting': ('exact',),
             'date': ('exact',),
+            'submitters': ('exact',),
         }
 
     # FIXME: see FIXME in graphql_utils connection_resolver
@@ -56,6 +57,7 @@ class BillFilterSet(django_filters.FilterSet):
             'delivered': ('exact',),
             'state': ('exact',),
             'result': ('exact',),
+            'proposers': ('exact',),
             'proposers__club_memberships__club': ('exact',)
         }
 

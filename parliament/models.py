@@ -561,6 +561,10 @@ class Interpellation(models.Model):
     url = models.URLField()
     description = models.TextField()
 
+    @property
+    def status_display(self):
+        return self.get_status_display()
+
 
 class AmendmentManager(models.Manager):
 

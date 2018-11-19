@@ -115,12 +115,15 @@ class DebateAppearanceType(DjangoObjectType):
 
 class InterpellationType(DjangoObjectType):
 
+    status_display = graphene.String()
+
     class Meta:
         interfaces = (Node,)
         model = Interpellation
         connection_class = CountableConnectionBase
         filter_fields = {
-            'id': ('exact',)
+            'id': ('exact',),
+            'asked_by': ('exact',),
         }
 
 
