@@ -421,7 +421,7 @@ class Bill(models.Model):
     delivered = models.DateField(db_index=True)
     proposer_nonmember = models.CharField(max_length=255, default='')
     proposers = models.ManyToManyField(
-        Member, related_name='proposers', through='BillProposer')
+        Member, related_name='bills', through='BillProposer')
     state = models.SmallIntegerField(choices=State.choices, null=True, blank=True)
     result = models.SmallIntegerField(choices=Result.choices, null=True, blank=True)
     url = models.URLField()
@@ -525,7 +525,9 @@ class DebateAppearance(models.Model):
     session = models.ForeignKey('Session', on_delete=models.CASCADE)
     start = models.DateTimeField(db_index=True)
     end = models.DateTimeField()
-    debater = models.ForeignKey('Member', on_delete=models.CASCADE, null=True, blank=True)
+    debater = models.ForeignKey(
+        'Member', on_delete=models.CASCADE,
+        null=True, blank=True, related_name='debate_appearances')
     appearance_type = models.SmallIntegerField(choices=AppearanceType.choices)
     press_num = models.ManyToManyField('Press', blank=True)
     video_url = models.URLField()
@@ -548,7 +550,8 @@ class Interpellation(models.Model):
     external_id = models.PositiveIntegerField(unique=True)
     period = models.ForeignKey('Period', on_delete=models.CASCADE)
     date = models.DateField()
-    asked_by = models.ForeignKey('Member', on_delete=models.CASCADE, null=True, blank=True)
+    asked_by = models.ForeignKey(
+        'Member', on_delete=models.CASCADE, null=True, blank=True, related_name='interpellations')
     status = models.SmallIntegerField(choices=StatusType.choices)
     interpellation_session = models.ForeignKey(
         'Session', on_delete=models.CASCADE, related_name='interpellations', null=True, blank=True)
@@ -582,12 +585,12 @@ class Amendment(models.Model):
     url = models.URLField()
     signed_members = models.ManyToManyField(
         'Member',
-        related_name='signed_members',
+        related_name='signed_amendments',
         through='AmendmentSignedMember',
         blank=True)
     submitters = models.ManyToManyField(
         'Member',
-        related_name='submitters',
+        related_name='submitted_amendments',
         through='AmendmentSubmitter',
         blank=True)
 
