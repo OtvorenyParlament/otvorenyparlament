@@ -313,7 +313,8 @@ class ParliamentQueries(graphene.ObjectType):
     )
 
     club = Node.Field(ClubType)
-    all_clubs = OrderedDjangoFilterConnectionField(ClubType)
+    all_clubs = OrderedDjangoFilterConnectionField(
+        ClubType, orderBy=graphene.List(of_type=graphene.String))
 
     period = Node.Field(PeriodType)
     all_periods = DjangoFilterConnectionField(PeriodType)

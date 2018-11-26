@@ -110,7 +110,11 @@ class MemberFilterSet(django_filters.FilterSet):
             'id': ('exact',),
             'stood_for_party': ('exact',),
             'period__period_num': ('exact',),
-            'person__id': ('exact',)
+            'person__id': ('exact',),
+            'bills': ('isnull',),
+            'submitted_amendments': ('isnull',),
+            'interpellations': ('isnull',),
+            'debate_appearances': ('isnull',),
         }
 
 

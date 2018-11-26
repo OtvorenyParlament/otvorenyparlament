@@ -56,7 +56,6 @@ class Club(models.Model):
             models.Q(start__lte=today),
             models.Q(end__gt=today) | models.Q(end__isnull=True)
         ).count()
-        return self.members.count()
 
 
 class Party(models.Model):

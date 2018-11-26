@@ -87,6 +87,6 @@ class ParliamentStatsQueries(ObjectType):
 
         sums = {x: Sum(x) for x in fields_to_aggregate}
 
-        member__stats = list(member.member_stats.all().values('member').annotate(**sums))[0]
+        member_stats = list(member.member_stats.all().values('member').annotate(**sums))[0]
         member_stats['member'] = member
         return MemberStatsType(**member_stats)
