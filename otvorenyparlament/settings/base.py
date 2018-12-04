@@ -34,8 +34,10 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.flatpages',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
     'debug_toolbar',
     'django_filters',
@@ -81,6 +83,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'otvorenyparlament.wsgi.application'
+SITE_ID = 1
 
 
 # Password validation
