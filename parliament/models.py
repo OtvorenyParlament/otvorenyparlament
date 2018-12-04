@@ -322,7 +322,7 @@ class Voting(models.Model):
             x[0]: x[1]
             for x in VotingVote._meta.get_field('vote').flatchoices
         }
-        sums = self.votes.values('vote').annotate(total=models.Count('vote'))
+        sums = self.votes.values('vote').annotate(total=models.Count('vote')).order_by('vote')
         series = []
         labels = []
         for dct in sums:
@@ -339,11 +339,11 @@ class VotingVoteManager(models.Manager):
 
 
 class VotingVote(models.Model):
-    FOR = 'Z'
-    AGAINST = 'P'
-    ABSTAIN = '?'
-    DNV = 'N'
-    ABSENT = '0'
+    FOR = 0
+    AGAINST = 1
+    ABSTAIN = 2
+    DNV = 3
+    ABSENT = 4
 
     OPTIONS = (
         (FOR, 'Za'),
@@ -365,7 +365,7 @@ class VotingVote(models.Model):
         on_delete=models.CASCADE,
         related_name='votes'
     )
-    vote = models.CharField(max_length=1, choices=OPTIONS)
+    vote = models.SmallIntegerField(choices=OPTIONS)
     objects = VotingVoteManager()
 
     class Meta:
