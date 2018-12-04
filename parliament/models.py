@@ -167,7 +167,7 @@ class ClubMember(models.Model):
 
     class Meta:
         unique_together = (('club', 'member', 'start'),)
-        ordering = ('club', 'member', 'start')
+        ordering = ('-start',)
 
     def __str__(self):
         return '{} - {}'.format(self.club, self.member)

@@ -5,6 +5,24 @@ Aggregated stats from parliament app
 from django.db import models
 
 
+class GlobalStats(models.Model):
+
+    period = models.ForeignKey(
+        'parliament.Period', on_delete=models.CASCADE, related_name='global_stats')
+    date = models.DateField(unique=True)
+    bill_count_by_coalition = models.PositiveSmallIntegerField()
+    bill_count_by_opposition = models.PositiveSmallIntegerField()
+    amendment_count_by_coalition = models.PositiveSmallIntegerField()
+    amendment_count_by_opposition = models.PositiveSmallIntegerField()
+    interpellation_count_by_coalition = models.PositiveSmallIntegerField()
+    interpellation_count_by_opposition = models.PositiveSmallIntegerField()
+
+    class Meta:
+        unique_together = (('period', 'date',))
+        verbose_name = 'Global Stats'
+        verbose_name_plural = verbose_name
+
+
 class ClubStats(models.Model):
 
     club = models.ForeignKey(

@@ -2,15 +2,16 @@
 Graphene Stats
 """
 
-from django.db.models import Sum
+from django.db.models import F, Sum
 
 import graphene
 from graphene import ObjectType
 from graphene.utils.str_converters import to_snake_case
 from graphql_relay.node.node import from_global_id
 
-from parliament.models import Club, Member
-from parliament_stats.models import ClubStats, MemberStats
+from parliament.graphql import ClubType
+from parliament.models import Club, Member, Period
+from parliament_stats.models import ClubStats, GlobalStats, MemberStats
 from parliament_stats.types import ColumnStatsType
 
 
@@ -23,6 +24,31 @@ class ClubStatsType(ColumnStatsType):
         # group_fields = ['votingCoalition', 'votingOpposition']
 
 
+class GlobalStatsType(ColumnStatsType):
+
+    class Meta:
+        model = GlobalStats
+        exclude_fields = ['id', 'date']
+
+class GlobalClubStatsType(ObjectType):
+
+    club = graphene.Field(ClubType)
+    bill_count = graphene.Int()
+    amendment_count = graphene.Int()
+    interpellation_count = graphene.Int()
+
+    class Meta:
+        interfaces = (graphene.relay.Node,)
+
+
+class GlobalClubStatsConnection(graphene.Connection):
+
+    total_count = graphene.Int()
+
+    class Meta:
+        node = GlobalClubStatsType
+
+
 class MemberStatsType(ColumnStatsType):
 
     class Meta:
@@ -33,6 +59,10 @@ class MemberStatsType(ColumnStatsType):
 class ParliamentStatsQueries(ObjectType):
 
     club_stats = graphene.Field(ClubStatsType, club=graphene.ID(required=True))
+    global_stats = graphene.Field(GlobalStatsType, period_num=graphene.Int(required=True))
+    #global_club_stats = graphene.Field(graphene.List(GlobalClubStatsType))
+    global_club_stats = graphene.relay.ConnectionField(
+        GlobalClubStatsConnection, period_num=graphene.Int(required=True))
     member_stats = graphene.Field(MemberStatsType, member=graphene.ID(required=True))
 
     def resolve_club_stats(self, info, club):
@@ -62,6 +92,46 @@ class ParliamentStatsQueries(ObjectType):
         club_stats = list(club.club_stats.all().values('club').annotate(**sums))[0]
         club_stats['club'] = club
         return ClubStatsType(**club_stats)
+
+    def resolve_global_stats(self, info, period_num):
+        try:
+            period = Period.objects.get(period_num=period_num)
+        except Period.DoesNotExist:
+            raise Exception("Requested period does not exist")
+        fields_to_aggregate = [
+            to_snake_case(x.name.value) for x in info.field_asts[0].selection_set.selections
+            if x.name.value and x.name.value not in ['period', 'date', '__typename']
+        ]
+
+        sums = {x: Sum(x) for x in fields_to_aggregate}
+        global_stats = list(period.global_stats.all().values('period').annotate(**sums))[0]
+        global_stats['period'] = period
+        return GlobalStatsType(**global_stats)
+
+    def resolve_global_club_stats(self, info, period_num):
+
+        try:
+            period = Period.objects.get(period_num=period_num)
+        except Period.DoesNotExist:
+            raise Exception("Requested period does not exist")
+
+        fields_to_aggregate = {}
+        for field in info.field_asts[0].selection_set.selections[0].selection_set.selections[0].selection_set.selections:
+            if field.name.value == 'billCount':
+                fields_to_aggregate['bill_count'] = Sum('bill_count')
+            if field.name.value == 'amendmentCount':
+                fields_to_aggregate['amendment_count'] = Sum(
+                    F('amendment_coalition') + F('amendment_opposition'))
+            if field.name.value == 'interpellationCount':
+                fields_to_aggregate['interpellation_count'] = Sum('interpellation_count')
+
+        results = ClubStats.objects.filter(club__period=period).values('club').annotate(**fields_to_aggregate)
+
+        clubs = {y.id: y for y in Club.objects.filter(id__in=[x['club'] for x in results])}
+        for result in results:
+            result['club'] = clubs[result['club']]
+
+        return [GlobalClubStatsType(**x) for x in results]
 
     def resolve_member_stats(self, info, member):
         try:
