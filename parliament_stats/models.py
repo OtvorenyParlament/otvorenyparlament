@@ -12,6 +12,8 @@ class GlobalStats(models.Model):
     date = models.DateField(unique=True)
     bill_count_by_coalition = models.PositiveSmallIntegerField()
     bill_count_by_opposition = models.PositiveSmallIntegerField()
+    bill_count_by_government = models.PositiveSmallIntegerField()
+    bill_count_by_committee = models.PositiveSmallIntegerField()
     amendment_count_by_coalition = models.PositiveSmallIntegerField()
     amendment_count_by_opposition = models.PositiveSmallIntegerField()
     interpellation_count_by_coalition = models.PositiveSmallIntegerField()
