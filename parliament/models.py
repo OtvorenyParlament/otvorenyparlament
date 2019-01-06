@@ -414,10 +414,16 @@ class Bill(models.Model):
         legal_selection = ChoiceItem(10, "Výber právneho poradcu")
         reading_2 = ChoiceItem(11, "NZ postúpil do II. čítania")
 
+    class Proposer(DjangoChoices):
+        members = ChoiceItem(0, "Poslanci NR SR")
+        government = ChoiceItem(1, 'Vláda')
+        committee = ChoiceItem(2, 'Výbor')
+
     external_id = models.PositiveIntegerField(unique=True)
     category = models.SmallIntegerField(choices=Category.choices)
     press = models.ForeignKey(Press, on_delete=models.CASCADE)
     delivered = models.DateField(db_index=True)
+    proposer_type = models.SmallIntegerField(choices=Proposer.choices, null=True, blank=True)
     proposer_nonmember = models.CharField(max_length=255, default='')
     proposers = models.ManyToManyField(
         Member, related_name='bills', through='BillProposer')
