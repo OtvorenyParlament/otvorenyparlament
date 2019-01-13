@@ -583,7 +583,7 @@ class AmendmentManager(models.Manager):
 class Amendment(models.Model):
 
     external_id = models.PositiveIntegerField(unique=True)
-    session = models.ForeignKey('Session', on_delete=models.CASCADE)
+    session = models.ForeignKey('Session', on_delete=models.CASCADE, null=True, blank=True)
     press = models.ForeignKey('Press', on_delete=models.CASCADE)
     date = models.DateField()
     voting = models.ForeignKey('Voting', on_delete=models.CASCADE, null=True, blank=True)
