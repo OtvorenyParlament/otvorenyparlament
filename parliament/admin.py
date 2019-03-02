@@ -4,7 +4,7 @@ Parliament Admin Views
 
 from django.contrib import admin
 
-from parliament.models import (Bill, BillProcessStep, Club, ClubMember, Member, MemberChange, Party,
+from parliament.models import (Bill, BillProcessStep, Club, ClubMember, Member, MemberActive, MemberChange, Party,
                                Period, Press, Session, Voting, VotingVote)
 
 
@@ -13,6 +13,7 @@ class BillAdmin(admin.ModelAdmin):
 
     list_display = ('external_id',)
     list_filter = ('proposers__club_memberships__club',)
+
 
 @admin.register(BillProcessStep)
 class BillStepProcessAdmin(admin.ModelAdmin):
@@ -24,6 +25,7 @@ class BillStepProcessAdmin(admin.ModelAdmin):
 class ClubAdmin(admin.ModelAdmin):
 
     list_display = ('name', 'coalition')
+
 
 @admin.register(ClubMember)
 class ClubMemberAdmin(admin.ModelAdmin):
@@ -47,6 +49,11 @@ class MemberAdmin(admin.ModelAdmin):
     search_fields = ['person__surname', 'person__forename']
     list_filter = ('period', 'person')
 
+
+@admin.register(MemberActive)
+class MemberActiveAdmin(admin.ModelAdmin):
+
+    list_display = ('member', 'start', 'end')
 
 @admin.register(MemberChange)
 class MemberChangeAdmin(admin.ModelAdmin):

@@ -551,6 +551,7 @@ class Interpellation(models.Model):
         awaiting_response = ChoiceItem(0, "Príjem odpovede na interpeláciu")
         debate = ChoiceItem(1, "Rokovanie o interpelácii")
         closed = ChoiceItem(2, "Uzavretá odpoveď na interpeláciu")
+        expedition = ChoiceItem(3, "Interpelácia na expedíciu")
 
     external_id = models.PositiveIntegerField(unique=True)
     period = models.ForeignKey('Period', on_delete=models.CASCADE)
