@@ -4,8 +4,10 @@ Parliament Admin Views
 
 from django.contrib import admin
 
-from parliament.models import (Bill, BillProcessStep, Club, ClubMember, Member, MemberActive, MemberChange, Party,
-                               Period, Press, Session, Voting, VotingVote)
+from parliament.models import (Bill, BillProcessStep, Club, ClubMember,
+                               Committee, CommitteeMember, Member,
+                               MemberActive, MemberChange, Party, Period,
+                               Press, Session, Voting, VotingVote)
 
 
 @admin.register(Bill)
@@ -40,6 +42,17 @@ class ClubMemberAdmin(admin.ModelAdmin):
             ).select_related().prefetch_related().order_by(
                 'person__forename', 'person__surname')
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+@admin.register(Committee)
+class CommitteeAdmin(admin.ModelAdmin):
+
+    pass
+
+
+@admin.register(CommitteeMember)
+class CommitteeMemberAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(Member)

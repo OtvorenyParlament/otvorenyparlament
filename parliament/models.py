@@ -58,6 +58,41 @@ class Club(models.Model):
         ).count()
 
 
+class Committee(models.Model):
+    period = models.ForeignKey(Period, on_delete=models.CASCADE)
+    name = models.CharField(max_length=128, unique=True)
+    external_id = models.IntegerField(unique=True)
+    url = models.URLField()
+
+    def __str__(self):
+        return self.name
+
+
+class CommitteeMember(models.Model):
+
+    class CommitteeMembership(DjangoChoices):
+        chair_f = ChoiceItem(0, 'predsedníčka')
+        chair_m = ChoiceItem(1, 'predseda')
+        vice_chair_f = ChoiceItem(2, 'podpredsedníčka')
+        vice_chair_m = ChoiceItem(3, 'podpredseda')
+        member_f = ChoiceItem(4, 'členka')
+        member_m = ChoiceItem(5, 'člen')
+        substitute_member_f = ChoiceItem(6, 'náhradná členka')
+        substitue_member_m = ChoiceItem(7, 'náhradný člen')
+        verifier_f = ChoiceItem(8, 'overovateľka')
+        verifier_m = ChoiceItem(9, 'overovateľ')
+
+    committee = models.ForeignKey(
+        'Committee', on_delete=models.CASCADE, related_name='members')
+    member = models.ForeignKey(
+        'Member',
+        on_delete=models.CASCADE,
+        related_name='committee_memberships')
+    membership = models.SmallIntegerField(choices=CommitteeMembership.choices)
+    start = models.DateField()
+    end = models.DateField(null=True, blank=True)
+
+
 class Party(models.Model):
     """
     Parliament Party
