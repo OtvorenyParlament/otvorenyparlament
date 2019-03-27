@@ -10,7 +10,9 @@ from django_filters.constants import EMPTY_VALUES
 
 from graphql_relay.node.node import from_global_id
 
-from parliament.models import Amendment, AmendmentSubmitter, Bill, Club, ClubMember, Member, MemberChange, Period, VotingVote
+from parliament.models import (Amendment, AmendmentSubmitter, Bill, Club,
+                               ClubMember, CommitteeMember, Member,
+                               MemberChange, Period, VotingVote)
 
 
 class AmendmentFilterSet(django_filters.FilterSet):
@@ -88,6 +90,32 @@ class ClubMemberFilterSet(django_filters.FilterSet):
             'id': ('exact',),
             'club': ('exact',),
             'club__name': ('exact', 'icontains'),
+            'member__period__period_num': ('exact',),
+        }
+
+
+class CommitteeMemberFilterSet(django_filters.FilterSet):
+
+    is_current_member = django_filters.DateFilter(
+        field_name='is_current_member', method='filter_is_current_member')
+
+    def filter_is_current_member(self, queryset, name, value):
+        queryset = queryset.filter(
+            Q(start__lte=value),
+            Q(end__gt=value) | Q(end__isnull=True)
+        )
+        return queryset
+
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        return queryset.distinct()
+
+    class Meta:
+        model = CommitteeMember
+        fields = {
+            'id': ('exact',),
+            'committee': ('exact',),
+            'committee__name': ('exact', 'icontains'),
             'member__period__period_num': ('exact',),
         }
 

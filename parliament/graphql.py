@@ -12,6 +12,7 @@ from parliament.filters import (
     AmendmentFilterSet,
     BillFilterSet,
     ClubMemberFilterSet,
+    CommitteeMemberFilterSet,
     MemberFilterSet,
     VotingVoteFilterSet
 )
@@ -24,6 +25,8 @@ from parliament.models import (
     BillProposer,
     Club,
     ClubMember,
+    Committee,
+    CommitteeMember,
     DebateAppearance,
     Interpellation,
     Member,
@@ -74,6 +77,29 @@ class ClubType(DjangoObjectType):
             'period__period_num': ('exact',)
         }
         only_fields = ['name', 'period', 'members', 'current_member_count', 'coalition']
+
+
+class CommitteeMemberType(DjangoObjectType):
+
+    class Meta:
+        model = CommitteeMember
+        description = 'Committee Member'
+        interfaces = (Node,)
+        only_fields = ['committee', 'member', 'membership', 'start', 'end']
+        connection_class = CountableConnectionBase
+
+
+class CommitteeType(DjangoObjectType):
+
+    class Meta:
+        model = Committee
+        description = 'Committee'
+        interfaces = (Node,)
+        filter_fields = {
+            'id': ('exact',),
+            'period__period_num': ('exact',)
+        }
+        only_fields = ['name', 'period', 'members', 'description']
 
 
 class PeriodType(DjangoObjectType):
@@ -315,6 +341,19 @@ class ParliamentQueries(graphene.ObjectType):
     club = Node.Field(ClubType)
     all_clubs = OrderedDjangoFilterConnectionField(
         ClubType, orderBy=graphene.List(of_type=graphene.String))
+
+    committee_member = Node.Field(CommitteeMemberType)
+    all_committee_members = OrderedDjangoFilterConnectionField(
+        CommitteeMemberType,
+        orderBy=graphene.List(of_type=graphene.String),
+        filterset_class=CommitteeMemberFilterSet
+    )
+
+    committee = Node.Field(CommitteeType)
+    all_committees = OrderedDjangoFilterConnectionField(
+        CommitteeType,
+        orderBy=graphene.List(of_type=graphene.String),
+    )
 
     period = Node.Field(PeriodType)
     all_periods = DjangoFilterConnectionField(PeriodType)
