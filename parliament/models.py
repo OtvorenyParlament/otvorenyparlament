@@ -63,6 +63,7 @@ class Committee(models.Model):
     name = models.CharField(max_length=128, unique=True)
     external_id = models.IntegerField(unique=True)
     url = models.URLField()
+    description = models.TextField(default='')
 
     def __str__(self):
         return self.name
