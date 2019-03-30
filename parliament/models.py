@@ -94,6 +94,35 @@ class CommitteeMember(models.Model):
     end = models.DateField(null=True, blank=True)
 
 
+class CommitteeSession(models.Model):
+
+    committee = models.ForeignKey(Committee, on_delete=models.CASCADE)
+    start = models.DateTimeField()
+    end = models.DateTimeField(null=True, blank=True)
+    place = models.TextField()
+
+    class Meta:
+        unique_together = (('committee', 'start'),)
+
+    def __str__(self):
+        return '{} - {}'.format(self.start)
+
+
+class CommitteeSessionPoint(models.Model):
+
+    session = models.ForeignKey(CommitteeSession, on_delete=models.CASCADE)
+    index = models.SmallIntegerField(null=True, blank=True)
+    topic = models.CharField(max_length=2048)
+    press = models.ForeignKey(
+        'Press', on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        unique_together = (('session', 'topic'),)
+
+    def __str__(self):
+        return self.topic
+
+
 class Party(models.Model):
     """
     Parliament Party
