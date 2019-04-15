@@ -94,12 +94,22 @@ class CommitteeMember(models.Model):
     end = models.DateField(null=True, blank=True)
 
 
+class CommitteeSessionManager(models.Manager):
+    
+    def get_queryset(self):
+        return super().get_queryset().select_related(
+            'committee'
+        ).prefetch_related('points')
+
+
 class CommitteeSession(models.Model):
 
     committee = models.ForeignKey(Committee, on_delete=models.CASCADE)
     start = models.DateTimeField()
     end = models.DateTimeField(null=True, blank=True)
     place = models.TextField()
+
+    objects = CommitteeSessionManager
 
     class Meta:
         unique_together = (('committee', 'start'),)
@@ -108,13 +118,22 @@ class CommitteeSession(models.Model):
         return '{} - {}'.format(self.start)
 
 
+class CommitteeSessionPointManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().select_related('committee', 'session')
+
+
 class CommitteeSessionPoint(models.Model):
 
-    session = models.ForeignKey(CommitteeSession, on_delete=models.CASCADE)
+    session = models.ForeignKey(
+        CommitteeSession, on_delete=models.CASCADE, related_name='points')
     index = models.SmallIntegerField(null=True, blank=True)
     topic = models.CharField(max_length=2048)
     press = models.ForeignKey(
         'Press', on_delete=models.CASCADE, null=True, blank=True)
+
+    objects = CommitteeSessionPointManager()
 
     class Meta:
         unique_together = (('session', 'topic'),)

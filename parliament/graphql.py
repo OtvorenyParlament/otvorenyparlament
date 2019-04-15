@@ -27,6 +27,8 @@ from parliament.models import (
     ClubMember,
     Committee,
     CommitteeMember,
+    CommitteeSession,
+    CommitteeSessionPoint,
     DebateAppearance,
     Interpellation,
     Member,
@@ -100,6 +102,35 @@ class CommitteeType(DjangoObjectType):
             'period__period_num': ('exact',)
         }
         only_fields = ['name', 'period', 'members', 'description']
+        connection_class = CountableConnectionBase
+
+
+class CommitteeSessionPointType(DjangoObjectType):
+
+    class Meta:
+        model = CommitteeSessionPoint
+        description = 'Committee Session Point'
+        interfaces = (Node,)
+        filter_fields = {
+            'id': ('exact',),
+            'session': ('exact',)
+        }
+        only_fields = ['session', 'index', 'topic', 'press']
+        connection_class = CountableConnectionBase
+
+
+class CommitteeSessionType(DjangoObjectType):
+
+    class Meta:
+        model = CommitteeSession
+        description = 'Committee Session'
+        interfaces = (Node,)
+        filter_fields = {
+            'id': ('exact',),
+            'committee': ('exact',),
+        }
+        only_fields = ['committee', 'start', 'end', 'place', 'points']
+        connection_class = CountableConnectionBase
 
 
 class PeriodType(DjangoObjectType):
@@ -352,6 +383,18 @@ class ParliamentQueries(graphene.ObjectType):
     committee = Node.Field(CommitteeType)
     all_committees = OrderedDjangoFilterConnectionField(
         CommitteeType,
+        orderBy=graphene.List(of_type=graphene.String),
+    )
+
+    committee_session = Node.Field(CommitteeSessionType)
+    all_committee_sessions = OrderedDjangoFilterConnectionField(
+        CommitteeSessionType,
+        orderBy=graphene.List(of_type=graphene.String),
+    )
+
+    committee_session_point = Node.Field(CommitteeSessionPointType)
+    all_committee_session_points = OrderedDjangoFilterConnectionField(
+        CommitteeSessionPointType,
         orderBy=graphene.List(of_type=graphene.String),
     )
 
