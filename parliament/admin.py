@@ -92,6 +92,8 @@ class PressAdmin(admin.ModelAdmin):
 
     list_select_related = ('period',)
     list_display = ('period', 'press_type', 'press_num', 'title')
+    search_fields = ['press_num']
+    list_filter = ('period',)
 
 
 @admin.register(Session)
