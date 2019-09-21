@@ -41,7 +41,7 @@ class ColumnStatsType(ObjectType):
         #         for field in model._meta.get_fields():
 
         django_fields = yank_fields_from_attrs(
-            construct_fields(model, registry, only_fields, exclude_fields), _as=Field
+            construct_fields(model, registry, only_fields, exclude_fields, convert_choices_to_enum=True), _as=Field
         )
 
         assert not (possible_types and cls.is_type_of), (
