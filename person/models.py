@@ -41,13 +41,13 @@ class Person(models.Model):
         (UKRAINIAN, _p('woman', 'Ukrainian'))
     )
 
-    title = models.CharField(max_length=64, default='')
+    title = models.CharField(max_length=64, default='', blank=True)
     forename = models.CharField(max_length=128, db_index=True)
     surname = models.CharField(max_length=128, db_index=True)
     born = models.DateField(null=True, blank=True)
     residence = models.ForeignKey(
         'geo.Village', on_delete=models.CASCADE, null=True, blank=True)
-    email = models.EmailField()
+    email = models.EmailField(null=True, blank=True)
     nationality = models.CharField(
         max_length=24, db_index=True, choices=NATIONALITIES, default=UNKNOWN)
     photo = models.ImageField(upload_to='member_images/', blank=True, null=True)
