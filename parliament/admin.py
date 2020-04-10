@@ -32,7 +32,7 @@ class ClubAdmin(admin.ModelAdmin):
 @admin.register(ClubMember)
 class ClubMemberAdmin(admin.ModelAdmin):
 
-    list_filter = ('club',)
+    list_filter = ('club', 'member__period',)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "club":
