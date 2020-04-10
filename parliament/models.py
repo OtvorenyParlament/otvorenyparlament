@@ -60,10 +60,13 @@ class Club(models.Model):
 
 class Committee(models.Model):
     period = models.ForeignKey(Period, on_delete=models.CASCADE)
-    name = models.CharField(max_length=128, unique=True)
+    name = models.CharField(max_length=128)
     external_id = models.IntegerField(unique=True)
     url = models.URLField()
     description = models.TextField(default='')
+
+    class Meta:
+        unique_together = (('period', 'name'),)
 
     def __str__(self):
         return self.name
