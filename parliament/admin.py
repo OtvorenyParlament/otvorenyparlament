@@ -46,8 +46,8 @@ class ClubMemberAdmin(admin.ModelAdmin):
 
 @admin.register(Committee)
 class CommitteeAdmin(admin.ModelAdmin):
-
-    pass
+    list_display = ('name', 'period')
+    list_Filter = ('period',)
 
 
 @admin.register(CommitteeMember)
