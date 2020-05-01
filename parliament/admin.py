@@ -5,7 +5,7 @@ Parliament Admin Views
 from django.contrib import admin
 
 from parliament.models import (Bill, BillProcessStep, Club, ClubMember,
-                               Committee, CommitteeMember, Member,
+                               Committee, CommitteeMember, Interpellation, Member,
                                MemberActive, MemberChange, Party, Period,
                                Press, Session, Voting, VotingVote)
 
@@ -13,8 +13,13 @@ from parliament.models import (Bill, BillProcessStep, Club, ClubMember,
 @admin.register(Bill)
 class BillAdmin(admin.ModelAdmin):
 
-    list_display = ('external_id',)
-    list_filter = ('proposers__club_memberships__club',)
+    list_display = ('get_period', 'external_id', 'category', 'delivered')
+    list_filter = ('proposers__club_memberships__club', 'press__period')
+
+    def get_period(self, obj):
+        return obj.press.period
+    get_period.short_description = 'Period'
+    get_period.admin_order_field = 'press__period'
 
 
 @admin.register(BillProcessStep)
@@ -47,12 +52,20 @@ class ClubMemberAdmin(admin.ModelAdmin):
 @admin.register(Committee)
 class CommitteeAdmin(admin.ModelAdmin):
     list_display = ('name', 'period')
-    list_Filter = ('period',)
+    list_filter = ('period',)
 
 
 @admin.register(CommitteeMember)
 class CommitteeMemberAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('member', 'committee', 'membership')
+    list_filter = ('committee', 'membership')
+
+
+@admin.register(Interpellation)
+class InterpellationAdmin(admin.ModelAdmin):
+    list_display = ['external_id', 'period', 'date', 'asked_by']
+    list_filter = ['period', 'asked_by']
+    search_fields = ['external_id', 'asked_by', 'press']
 
 
 @admin.register(Member)
@@ -91,7 +104,7 @@ class PeriodAdmin(admin.ModelAdmin):
 class PressAdmin(admin.ModelAdmin):
 
     list_select_related = ('period',)
-    list_display = ('period', 'press_type', 'press_num', 'title')
+    list_display = ('period', 'date', 'press_type', 'press_num', 'title')
     search_fields = ['press_num']
     list_filter = ('period',)
 
@@ -110,3 +123,5 @@ class VotingVoteInline(admin.TabularInline):
 @admin.register(Voting)
 class VotingAdmin(admin.ModelAdmin):
     inlines = [VotingVoteInline,]
+    list_display = ('external_id', 'voting_num', 'topic', 'timestamp', 'result')
+    list_filter = ('session', 'result')
