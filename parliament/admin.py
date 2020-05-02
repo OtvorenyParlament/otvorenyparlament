@@ -4,10 +4,22 @@ Parliament Admin Views
 
 from django.contrib import admin
 
-from parliament.models import (Bill, BillProcessStep, Club, ClubMember,
+from parliament.models import (Amendment, Bill, BillProcessStep, Club, ClubMember,
                                Committee, CommitteeMember, Interpellation, Member,
                                MemberActive, MemberChange, Party, Period,
                                Press, Session, Voting, VotingVote)
+
+
+@admin.register(Amendment)
+class AmendmentAdmin(admin.ModelAdmin):
+
+    list_display = ('external_id', 'get_period', 'date')
+    list_filter = ('session__period',)
+
+    def get_period(self, obj):
+        return obj.press.period
+    get_period.short_description = 'Period'
+    get_period.admin_order_field = 'session__period'
 
 
 @admin.register(Bill)
