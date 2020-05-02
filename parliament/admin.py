@@ -50,7 +50,7 @@ class ClubAdmin(admin.ModelAdmin):
 class ClubMemberAdmin(admin.ModelAdmin):
 
     list_filter = ('club', 'member__period', 'start', 'end')
-    list_display = ('club', 'get_period', 'start', 'end')
+    list_display = ('club', 'member', 'get_period', 'start', 'end')
 
     def get_period(self, obj):
         return obj.member.period
