@@ -97,7 +97,13 @@ class MemberAdmin(admin.ModelAdmin):
 @admin.register(MemberActive)
 class MemberActiveAdmin(admin.ModelAdmin):
 
-    list_display = ('member', 'start', 'end')
+    list_display = ('get_period', 'member', 'start', 'end')
+    list_filter = ('member', 'member__period')
+    def get_period(self, obj):
+        return obj.member.period
+    get_period.short_description = 'Period'
+    get_period.admin_order_field = 'member__period'
+
 
 @admin.register(MemberChange)
 class MemberChangeAdmin(admin.ModelAdmin):
