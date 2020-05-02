@@ -49,6 +49,30 @@ class OrderedDjangoFilterConnectionField(DjangoFilterConnectionField):
         # but iterable might be promise
         iterable = queryset_resolver(connection, iterable, info, args)
 
+        club = args.get('club', None)
+        customized_club_filters = [
+            'all_amendments', 'all_interpellations', 'all_debate_appearances']
+        current_resolver = resolver.args[0]
+        if club and current_resolver in customized_club_filters:
+            id_tuple = from_global_id(club)
+            if id_tuple[0] == 'ClubType':
+                dfilter_key = 'date'
+                if current_resolver == 'all_amendments':
+                    filter_key = 'submitters'
+                elif current_resolver == 'all_interpellations':
+                    filter_key = 'asked_by'
+                elif current_resolver == 'all_debate_appearances':
+                    filter_key = 'debater'
+                    dfilter_key = 'start'
+                iterable = iterable.filter(
+                    Q(**{'{}__club_memberships__club__id'.format(filter_key): id_tuple[1]}) &
+                    Q(**{'{}__club_memberships__start__lte'.format(filter_key): F(dfilter_key)}) &
+                    (
+                        Q(**{'{}__club_memberships__end__gte'.format(filter_key): F(dfilter_key)}) |
+                        Q(**{'{}__club_memberships__end__isnull'.format(filter_key): True})
+                    )
+                ).distinct()
+
         order = args.get('orderBy', None)
         if order:
             iterable = iterable.order_by(*order)
@@ -69,4 +93,7 @@ class CountableConnectionBase(graphene.relay.Connection):
 
     total_count = graphene.Int()
     def resolve_total_count(self, info, **kwargs):
+        print(self.iterable.explain(verbose=True))
+        print(self.iterable.query)
+        print("PES")
         return self.iterable.count()
