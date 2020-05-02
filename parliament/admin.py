@@ -50,6 +50,12 @@ class ClubAdmin(admin.ModelAdmin):
 class ClubMemberAdmin(admin.ModelAdmin):
 
     list_filter = ('club', 'member__period', 'start', 'end')
+    list_display = ('club', 'get_period', 'start', 'end')
+
+    def get_period(self, obj):
+        return obj.member.period
+    get_period.short_description = 'Period'
+    get_period.admin_order_field = 'member__period'
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "club":
