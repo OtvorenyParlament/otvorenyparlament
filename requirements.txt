@@ -2,7 +2,7 @@ argon2-cffi==19.1.0
 Django==2.2.12
 django-choices==1.7.1
 django-cors-headers==3.2.1
-django-debug-toolbar==2.2
+django-debug-toolbar==2.2.1
 django-extensions==2.2.9
 django-filter==2.2.0
 graphene==2.1.8
